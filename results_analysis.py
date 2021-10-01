@@ -180,16 +180,16 @@ def get_center_and_rotation(obj, constellations):
             reverse_direction = i == 1
             deviations.append((constellation, max_deviation, reverse_direction))
     
-    constellation, max_deviation, reverse_direction = min(deviations, key=lambda x: x[1])
+    min_index = min(range(len(deviations)), key=lambda i: deviations[i][1])
+    constellation, max_deviation, reverse_direction = deviations[min_index]
 
     center, rotation = match_transform(obj, constellation, reverse_direction)
-    return center, rotation
+    return center, rotation, min_index // 2
 
 
 def farthest_points(obj, reverse_direction=False):
     """
-    Punkterna längst ifrån varandra
-    obj.shape = (steps, 2, marker_count)
+    Returnerar positionerna för punkterna längst ifrån varandra.
     """
     steps = obj.shape[0]
     marker_count = obj.shape[2]
