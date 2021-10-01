@@ -116,7 +116,7 @@ def load_constellation(path):
     return c.reshape(c.shape[0], 2, 1).T
 
 
-def save_markers(markers, path):
+def save_constellation(markers, path):
     if not os.path.exists(os.path.dirname(path)):
         os.makedirs(os.path.dirname(path))
     np.savetxt(path, markers, delimiter="\t")

@@ -30,7 +30,7 @@ def main():
         constellations += detect_marker_positions(f"results/{spin}")
 
     for i, constellation in enumerate(constellations):
-        ra.save_markers(constellation, f"analyzed_results/objects/{i}.tsv")
+        ra.save_constellation(constellation, f"analyzed_results/objects/{i}.tsv")
 
 
 
