@@ -50,8 +50,8 @@ def save_position_and_rotation(position, rotation, simulation_name, object_index
     directory = f"analyzed_results/movement/{simulation_name}/object_{object_index}"
     if not os.path.exists(directory):
         os.makedirs(directory)
-    np.savetxt(f"{directory}/position.tsv", position[:,:,0])
-    np.savetxt(f"{directory}/rotation.tsv", rotation[:,0])
+    np.savetxt(f"{directory}/position.tsv", position[:,:,0], delimiter="\t")
+    np.savetxt(f"{directory}/rotation.tsv", rotation[:,0], delimiter="\t")
     
     
 
