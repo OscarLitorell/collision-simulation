@@ -3,9 +3,11 @@ import os
 from sys import argv
 import matplotlib.pyplot as plt
 import results_analysis as ra
+import scipy.signal as signal
 
 
-def main():
+
+def main(plot=True):
     results_path = "results/collision"
     constellations_path = "analyzed_results/objects"
 
@@ -26,6 +28,22 @@ def main():
 
         positions.append(center)
         rotations.append(rotation)
+
+        p1 = obj[0]
+        p2 = obj[1]
+        p3 = obj[2]
+
+
+        if plot:    
+            plt.plot(center[:,0], center[:,1])
+            plt.plot(p1[0], p1[1])
+            plt.plot(p2[0], p2[1])
+            plt.plot(p3[0], p3[1])
+
+    if plot:
+        plt.axis('equal')
+        plt.show()
+
 
 
 
