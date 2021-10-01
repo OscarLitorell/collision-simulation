@@ -61,7 +61,8 @@ def save_position_and_rotation(position, rotation, simulation_name, object_index
 if __name__ == "__main__":
     try:
         path = argv[1]
-        main(path)
+        plot = "-p" in argv
+        main(path, plot)
     except IndexError:
         print("Please specify an experiment name")
         exit(1)
