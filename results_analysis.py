@@ -163,6 +163,10 @@ def locate_center(markers):
 
 
 def get_center_and_rotation(obj, constellations):
+    """
+    Matchar ett objekt med en konstellation och returnerar
+    positionen för dess centrum och rotation för alla tidpunkter.
+    """
     marker_count = obj.shape[2]
 
     obj_normalized = normalized_rotation_and_position(obj)
@@ -204,6 +208,9 @@ def farthest_points(obj, reverse_direction=False):
     return p1, p2
 
 def match_transform(obj, constellation, reverse_direction=False):
+    """
+    Returnerar centrum och rotation för ett objekt, givet dess konstellation.
+    """
     p1, p2 = farthest_points(obj)
     c_p1, c_p2 = farthest_points(constellation, reverse_direction)
     delta_p = p2 - p1
@@ -223,7 +230,9 @@ def match_transform(obj, constellation, reverse_direction=False):
 
 def normalized_rotation_and_position(obj, reverse_direction=False):
     """
-    obj.shape = (steps, 2, marker_count)
+    Returnerar objektet flyttat och roterat så att längsta sidan är
+    på x-axeln med ett hörn i origo. reverse_direction anger vilket hörn
+    som flyttas till origo.
     """
     steps = obj.shape[0]
     marker_count = obj.shape[2]
