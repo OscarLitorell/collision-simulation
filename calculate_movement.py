@@ -4,11 +4,12 @@ from sys import argv
 import matplotlib.pyplot as plt
 import results_analysis as ra
 import scipy.signal as signal
+import numpy as np
 
 
 
-def main(plot=True):
-    results_path = "results/collision"
+def main(simulation_name, plot=True):
+    results_path = f"results/{simulation_name}"
     constellations_path = "analyzed_results/constellations"
 
     (markers, tspan, dt) = ra.load_results(results_path)
@@ -19,19 +20,16 @@ def main(plot=True):
 
     constellations = [ra.load_constellation(constellations_path + "/" + file) for file in files_in_dir if file.endswith('.tsv')]
 
-    positions = []
-    rotations = []
+    object_movements = [] # (position, rotation, constellation_index)
 
     for obj in objects:
-        center, rotation = ra.get_center_and_rotation(obj, constellations)
+        center, rotation, constellation_index = ra.get_center_and_rotation(obj, constellations)
 
-        positions.append(center)
-        rotations.append(rotation)
+        object_movements.append((center, rotation, constellation_index))
 
         p1 = obj[:,:,0]
         p2 = obj[:,:,1]
         p3 = obj[:,:,2]
-
 
         if plot:    
             plt.plot(center[:,0], center[:,1])
@@ -42,13 +40,29 @@ def main(plot=True):
     if plot:
         plt.axis('equal')
         plt.show()
+    
+    for position, rotation, constellation_index in object_movements:
+        save_position_and_rotation(position, rotation, simulation_name, constellation_index)
 
 
+
+def save_position_and_rotation(position, rotation, simulation_name, object_index):
+    directory = f"analyzed_results/movement/{simulation_name}/object_{object_index}"
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    np.savetxt(f"{directory}/position.tsv", position[:,:,0])
+    np.savetxt(f"{directory}/rotation.tsv", rotation[:,0])
+    
+    
 
 
     
 
 if __name__ == "__main__":
-    main()
-
+    try:
+        path = argv[1]
+        main(path)
+    except IndexError:
+        print("Please specify simulation name")
+        exit(1)
 
