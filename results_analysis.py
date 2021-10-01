@@ -71,11 +71,6 @@ def match_marker_constellation(markers, constellations):
     index = np.argmin(diffs)
     return constellations[index]
 
-def get_ordered_distances(markers):
-    marker_count = markers.shape[2]
-    distances = get_distances(markers)
-    distances = np.sort(np.mean(distances, axis=0).flatten())[marker_count:]
-    return distances
 
 def get_distances(markers):
     steps = markers.shape[0]
@@ -86,6 +81,13 @@ def get_distances(markers):
             distance = np.sqrt(np.sum((markers[:,:,i] - markers[:,:,j])**2, axis=1))
             distances[:,i,j] = distance
     return distances + distances.swapaxes(1,2)
+
+
+def get_ordered_distances(markers):
+    marker_count = markers.shape[2]
+    distances = get_distances(markers)
+    distances = np.sort(np.mean(distances, axis=0).flatten())[marker_count:]
+    return distances
 
 
 def get_marker_constellation(obj, center=None):
@@ -109,17 +111,6 @@ def get_marker_constellation(obj, center=None):
     average_rotated_positions = np.mean(rotated_positions, axis=0).T
 
     return average_rotated_positions
-
-
-def load_constellation(path):
-    c = np.loadtxt(path, delimiter="\t")
-    return c.reshape(c.shape[0], 2, 1).T
-
-
-def save_constellation(markers, path):
-    if not os.path.exists(os.path.dirname(path)):
-        os.makedirs(os.path.dirname(path))
-    np.savetxt(path, markers, delimiter="\t")
 
 
 def locate_center(markers):
@@ -252,6 +243,17 @@ def normalized_rotation_and_position(obj, reverse_direction=False):
     rotated_mean = np.mean(rotated, axis=0).reshape(1, 2, marker_count)
     return rotated_mean
 
+
+
+def load_constellation(path):
+    c = np.loadtxt(path, delimiter="\t")
+    return c.reshape(c.shape[0], 2, 1).T
+
+
+def save_constellation(markers, path):
+    if not os.path.exists(os.path.dirname(path)):
+        os.makedirs(os.path.dirname(path))
+    np.savetxt(path, markers, delimiter="\t")
 
 
 
