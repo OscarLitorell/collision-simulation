@@ -1,3 +1,4 @@
 .MATLABDriveTag
 results/*
 analyzed_results/*
+__pycache__
