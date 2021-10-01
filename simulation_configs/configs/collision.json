@@ -5,15 +5,15 @@
     "rigidbodies": [
         {
             "object": "puck1",
-            "position": [-200, 0],
-            "velocity": [0, -50],
+            "position": [-400, 0],
+            "velocity": [400, 50],
             "theta": 1,
             "omega": 3
         },
         {
             "object": "puck2",
-            "position": [200, 0],
-            "velocity": [0, 50],
+            "position": [300, 0],
+            "velocity": [-400, -50],
             "theta": -0.5,
             "omega": 2
         }
