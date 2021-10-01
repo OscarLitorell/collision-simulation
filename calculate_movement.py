@@ -63,6 +63,6 @@ if __name__ == "__main__":
         path = argv[1]
         main(path)
     except IndexError:
-        print("Please specify simulation name")
+        print("Please specify an experiment name")
         exit(1)
 

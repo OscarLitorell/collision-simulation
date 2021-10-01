@@ -116,7 +116,7 @@ class Sim:
         v1t = v1 - v1n * normal
         v2t = v2 - v2n * normal
 
-        e = 1
+        e = 1 # Change later
 
         m = np.array([
             [e*m1-m2, (1+e)*m2],
