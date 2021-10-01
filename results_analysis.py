@@ -14,9 +14,14 @@ filter_range = 51
 # resultatdata från experimentet.
 
 def separate_connected(markers, threshold = 0.01):
+    """
+    Grupperar alla punkter vars anstånd till varandra varierar mindre än threshold.
+    """
     distances = get_distances(markers)
-    deviations = np.std(distances, axis=2)
-    connected = (deviations < threshold).astype(int)
+    avg = np.mean(distances, axis=2).reshape(markers.shape[0], markers.shape[0], 1)
+    
+    max_deviations = np.abs(distances - avg).max(axis=2)
+    connected = max_deviations < threshold
 
     object_count = np.linalg.matrix_rank(connected)
 
