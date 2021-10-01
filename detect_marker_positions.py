@@ -11,7 +11,7 @@ def detect_marker_positions(results_path):
     
     constellations = []
     
-    for i, obj in enumerate(objects):
+    for obj in objects:
         center = ra.locate_center(obj)
         marker_constellation = ra.get_marker_constellation(obj, center)
         constellations.append(marker_constellation)
