@@ -37,6 +37,7 @@ def separate_connected(markers, threshold = 0.01):
 
 def match_marker_constellation(markers, constellations):
     """
+    Obs: bättre att använda get_center_and_rotation direkt.
     Hittar konstellationen som bäst matchar den markörerna.
     Obs: Kan inte skilja bra mellan spegelvända konstellationer.
     """
@@ -154,18 +155,22 @@ def locate_center(markers):
 
 
 
-def get_center_and_rotation(obj, constellation):
+def get_center_and_rotation(obj, constellations):
     marker_count = obj.shape[0]
 
     obj_normalized = normalized_rotation_and_position(obj)
 
     deviations = []
-    for i in range(2):
-        c_normalized = normalized_rotation_and_position(constellation.reshape(marker_count, 2, 1), i==1)
-        all_points = np.concatenate((obj_normalized, c_normalized), axis=1).T
-        max_deviation = get_ordered_distances(all_points.reshape(all_points.shape[0], 2, 1))[2*marker_count-1]
-        deviations.append(max_deviation)
-    reverse_direction = deviations[0] > deviations[1]
+    for constellation in constellations:
+        for i in range(2):
+            c_normalized = normalized_rotation_and_position(constellation.reshape(marker_count, 2, 1), i==1)
+            all_points = np.concatenate((obj_normalized, c_normalized), axis=1).T
+            max_deviation = get_ordered_distances(all_points.reshape(all_points.shape[0], 2, 1))[2*marker_count-1]
+            reverse_direction = i == 1
+            deviations.append((constellation, max_deviation, reverse_direction))
+    
+    constellation, max_deviation, reverse_direction = min(deviations, key=lambda x: x[1])
+
     center, rotation = match_transform(obj, constellation.reshape(marker_count, 2, 1), reverse_direction)
     return center, rotation
 

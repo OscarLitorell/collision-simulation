@@ -23,8 +23,8 @@ def main(plot=True):
     rotations = []
 
     for obj in objects:
-        constellation = ra.match_marker_constellation(obj, constellations)
-        center, rotation = ra.get_center_and_rotation(obj, constellation)
+        # constellation = ra.match_marker_constellation(obj, constellations)
+        center, rotation = ra.get_center_and_rotation(obj, constellations)
 
         positions.append(center)
         rotations.append(rotation)
