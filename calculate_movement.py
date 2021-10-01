@@ -9,7 +9,7 @@ import scipy.signal as signal
 
 def main(plot=True):
     results_path = "results/collision"
-    constellations_path = "analyzed_results/objects"
+    constellations_path = "analyzed_results/constellations"
 
     (markers, tspan, dt) = ra.load_results(results_path)
     
