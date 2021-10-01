@@ -1,0 +1,21 @@
+{
+    "timespan": 10.0,
+    "dt": 0.01,
+    "noise_level": 1.0,
+    "rigidbodies": [
+        {
+            "object": "puck1",
+            "position": [-200, 0],
+            "velocity": [0, -50],
+            "theta": 1,
+            "omega": 3
+        },
+        {
+            "object": "puck2",
+            "position": [200, 0],
+            "velocity": [0, 50],
+            "theta": -0.5,
+            "omega": 2
+        }
+    ]
+}
