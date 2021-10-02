@@ -38,7 +38,7 @@ I denna mappen sparas filer för alla objekt som används i laborationen, i json
 * `radius` är radien på objektet mätt i millimeter.
 * `markers` är en lista med punkter som representerar objektets markörer.
 * `mass` är objektets massa mätt i kilogram.
-* `friction_coeff` är objektets friktionskoefficient.
+* `friction_coeff` är objektets friktionskoefficient mot golvet.
 
 ### Configs
 
@@ -49,6 +49,8 @@ I denna mappen finns alla labbuppställningar, även dem i json-format. Exempel 
     "timespan": 10.0,
     "dt": 0.01,
     "noise_level": 1.0,
+    "elasticity_coeff": 1.0,
+    "collision_friction_coeff": 0.5,
     "rigidbodies": [
         {
             "object": "puck1",
