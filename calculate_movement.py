@@ -13,9 +13,11 @@ def main(simulation_name, plot=True):
     constellations_path = "analyzed_results/constellations"
 
     (markers, tspan, dt) = ra.load_results(results_path)
-    
+
+    print("Grouping markers...")    
     objects = ra.separate_connected(markers)
-    
+    print("Found {} groups".format(len(objects)))
+
     files_in_dir = os.listdir(constellations_path)
 
     constellations = [ra.load_constellation(constellations_path + "/" + file) for file in files_in_dir if file.endswith('.tsv')]
