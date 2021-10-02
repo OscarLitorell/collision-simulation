@@ -45,10 +45,9 @@ class SimObject:
         self.pos = self.pos + self.v * dt
         self.theta = self.theta + self.omega * dt
 
-        if self.v[0] != 0 and self.v[1] != 0:
+        if self.v[0] != 0 or self.v[1] != 0:
             self.v = self.v * max(1 - dt * gravity * self.component.friction_coeff / linalg.norm(self.v), 0)
 
-        self.v = self.v * (1 - self.component.friction_coeff * dt)
         self.omega = self.omega * (1 - self.component.friction_coeff * dt)
         self.t += dt
         self.history.append([self.t, *self.get_marker_positions(noise_level)])
@@ -87,10 +86,10 @@ class Sim:
     def check_collissions(self):
         collissions = []
         for i in range(len(self.objects)):
+            p1 = self.objects[i].pos
+            r1 = self.objects[i].component.radius
             for j in range(i + 1, len(self.objects)):
-                p1 = self.objects[i].pos
                 p2 = self.objects[j].pos
-                r1 = self.objects[i].component.radius
                 r2 = self.objects[j].component.radius
                 if np.linalg.norm(p1 - p2) < r1 + r2:
                     collissions.append((i, j))
@@ -107,14 +106,12 @@ class Sim:
         m1 = obj1.component.mass
         m2 = obj2.component.mass
         
-        normal = p1 - p2
+        normal = p2 - p1
         normal /= np.linalg.norm(normal)
         tangent = np.array([-normal[1], normal[0]])
 
         v1n = np.dot(v1, normal)
         v2n = np.dot(v2, normal)
-        v1t = v1 - v1n * normal
-        v2t = v2 - v2n * normal
 
         e = 1 # Change later
 
@@ -124,19 +121,87 @@ class Sim:
         ]) / (e*(m1+m2))
         
         [v1np, v2np] = m @ np.array([v1n, v2n])
+        
+        J = m1 * (v1n - v1np) # Impulse on each object
 
-        [v1tp, v2tp] = [v1t, v2t] # No friction
+        v1tp, v2tp, omega1p, omega2p = self.collision_tangential(obj1, obj2, J)
 
-        v1p = v1np * normal + v1tp
-        v2p = v2np * normal + v2tp
+        v1p = v1np * normal + v1tp * tangent
+        v2p = v2np * normal + v2tp * tangent
         
         obj1.v = v1p
         obj2.v = v2p
-        
-        overlap = r1 + r2 - np.linalg.norm(p1 - p2)
-        obj1.pos = p1 + overlap * normal * 0.5
-        obj2.pos = p2 - overlap * normal * 0.5
+        obj1.omega = omega1p
+        obj2.omega = omega2p
 
+
+        # Correct for overlap:
+        overlap = r1 + r2 - np.linalg.norm(p2 - p1)
+        obj1.pos = p1 - overlap * normal * 0.5
+        obj2.pos = p2 + overlap * normal * 0.5
+
+
+    def collision_tangential(self, obj1, obj2, J):
+        p1 = obj1.pos
+        p2 = obj2.pos
+        r1 = obj1.component.radius
+        r2 = obj2.component.radius
+        m1 = obj1.component.mass
+        m2 = obj2.component.mass
+
+        nh = (p2 - p1) / np.linalg.norm(p2 - p1) # N-hat (normal unit vector)
+        th = np.array([-nh[1], nh[0]]) # T-hat (tangent unit vector)
+
+        v1 = np.dot(obj1.v, th)
+        v2 = np.dot(obj2.v, th)
+
+        omega1 = obj1.omega
+        omega2 = obj2.omega
+        I1 = obj1.component.moment_of_inertia()
+        I2 = obj2.component.moment_of_inertia()
+        v1t = omega1 * r1 + v1
+        v2t = -omega2 * r2 + v2
+
+        u = 0.5 # Friction coefficient
+
+        # Konstant glid:
+        Ju = J * u * sign(v2t - v1t)
+        d_v1 = Ju / m1
+        d_v2 = -Ju / m2
+        d_omega1 = Ju * r1 / I1
+        d_omega2 = Ju * r2 / I2
+
+        v1p = v1 + d_v1
+        v2p = v2 + d_v2
+        omega1p = omega1 + d_omega1
+        omega2p = omega2 + d_omega2
+
+        v1tp = omega1p * r1 + v1p
+        v2tp = -omega2p * r2 + v2p
+
+        if (v2t - v1t) * (v2tp - v1tp) < 0:
+            A = np.array([
+                [m1, m2,      0,      0],
+                [ 0,  0,  I1/r1, -I2/r2],
+                [m1,  0, -I1/r1,      0],
+                [ 1, -1,     r1,     r2]
+            ])
+            a = v2 - v1 - r1 * omega1 - r2 * omega2
+            B = np.array([0, 0, 0, a])
+
+            x = np.linalg.solve(A, B)
+            d_v1 = x[0]
+            d_v2 = x[1]
+            d_omega1 = x[2]
+            d_omega2 = x[3]
+
+            v1p = v1 + d_v1
+            v2p = v2 + d_v2
+            omega1p = omega1 + d_omega1
+            omega2p = omega2 + d_omega2
+
+
+        return [v1p, v2p, omega1p, omega2p]
 
     def export_to_file(self, save_path, unit_multiplier=0.001):
 
@@ -185,7 +250,15 @@ class Sim:
         return Sim(dt, timespan, objects, noise_level)
 
 
-def main(sim_path):
+def sign(x):
+    if x > 0:
+        return 1
+    elif x < 0:
+        return -1
+    else:
+        return 0
+
+def main(sim_path, plot=False):
 
     configs = os.listdir(os.path.join(sim_path, "configs"))
 
@@ -201,6 +274,7 @@ def main(sim_path):
         print(f"Simulation {name} done")
         sim.export_to_file(f"results/{name}")
         print(f"Simulation {name} exported\n")
+
 
 
 
