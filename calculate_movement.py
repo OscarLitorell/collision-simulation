@@ -27,15 +27,15 @@ def main(simulation_name, plot=True):
 
         object_movements.append((center, rotation, constellation_index))
 
-        p1 = obj[:,:,0]
-        p2 = obj[:,:,1]
-        p3 = obj[:,:,2]
+        marker_count = obj.shape[2]
 
         if plot:    
             plt.plot(center[:,0], center[:,1])
-            plt.plot(p1[:,0], p1[:,1])
-            plt.plot(p2[:,0], p2[:,1])
-            plt.plot(p3[:,0], p3[:,1])
+
+            for i in range(marker_count):
+                p = obj[:,:,i]
+                plt.plot(p[:,0], p[:,1], alpha=0.3)
+
 
     if plot:
         plt.axis('equal')
