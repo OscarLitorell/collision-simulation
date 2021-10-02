@@ -67,12 +67,21 @@ class SimObject:
 
 class Sim:
 
-    def __init__(self, dt, t_max, objects, noise_level=0):
+    def __init__(
+            self, 
+            dt, 
+            t_max, 
+            objects,
+            noise_level=0,
+            elasticity_coeff=None,
+            collision_friction_coeff=None):
+
         self.dt = dt
         self.t_max = t_max
         self.objects = objects
         self.noise_level = noise_level
-    
+        self.elasticity_coeff = elasticity_coeff
+        self.collision_friction_coeff = collision_friction_coeff
 
     def simulate(self):
         for i in range(int(self.t_max / self.dt)):
@@ -113,12 +122,12 @@ class Sim:
         v1n = np.dot(v1, normal)
         v2n = np.dot(v2, normal)
 
-        e = 1 # Change later
+        e = self.elasticity_coeff # Change later
 
         m = np.array([
-            [e*m1-m2, (1+e)*m2],
-            [(1+e)*m2, e*m2-m1]
-        ]) / (e*(m1+m2))
+            [ m1-e*m2, (1+e)*m2],
+            [(1+e)*m2,  m2-e*m1]
+        ]) / (m1+m2)
         
         [v1np, v2np] = m @ np.array([v1n, v2n])
         
@@ -162,7 +171,7 @@ class Sim:
         v1t = omega1 * r1 + v1
         v2t = -omega2 * r2 + v2
 
-        u = 0.5 # Friction coefficient
+        u = self.collision_friction_coeff # Friction coeff
 
         # Konstant glid:
         Ju = J * u * sign(v2t - v1t)
@@ -232,7 +241,8 @@ class Sim:
             dt = setup["dt"]
             noise_level = setup["noise_level"] * unit_multiplier
             rigidbodies = setup["rigidbodies"]
-
+            elasticity_coeff = setup["elasticity_coeff"] if "elasticity_coeff" in setup else 1
+            collision_friction_coeff = setup["collision_friction_coeff"] if "collision_friction_coeff" in setup else 0
         objects = []
 
         configs_dir = os.path.dirname(filepath)
@@ -247,7 +257,7 @@ class Sim:
             omega = rigidbody["omega"]
             objects.append(SimObject(component, position, velocity, theta, omega))
 
-        return Sim(dt, timespan, objects, noise_level)
+        return Sim(dt, timespan, objects, noise_level, elasticity_coeff, collision_friction_coeff)
 
 
 def sign(x):

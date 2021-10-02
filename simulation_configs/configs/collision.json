@@ -2,6 +2,8 @@
     "timespan": 10.0,
     "dt": 0.01,
     "noise_level": 1.0,
+    "elasticity_coeff": 1.0,
+    "collision_friction_coeff": 0.5,
     "rigidbodies": [
         {
             "object": "puck1",
