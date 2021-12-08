@@ -20,8 +20,8 @@ def detect_marker_positions(results_path):
 
 def main():
     puck_spins = [
-        "spin1",
-        "spin2"
+        "alu-disks-spins_T2",
+        "alu-disks-spins_Y2"
     ]
 
     constellations = []
