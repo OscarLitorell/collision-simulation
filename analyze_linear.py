@@ -14,7 +14,6 @@ def convert_qualisys(files_path):
         with open(f"{files_path}/{file}", "r") as text:
             lines = text.readlines()
             lines = [line[:-1].split("\t") for line in lines]
-            print(lines)
 
             metadata_list = lines[:10]
             metadata = {}
@@ -32,6 +31,8 @@ def convert_qualisys(files_path):
             marker_trajectories = {}
             marker_ranges = []
             for i, marker in enumerate(marker_names):
+                if len(marker) == 0:
+                    continue
                 marker_trajectory = data[:,2+3*i : 2+3*i+3]
                 marker_trajectories[marker] = marker_trajectory
                 marker_range = np.any(marker_trajectory != 0, axis=1)
@@ -91,7 +92,7 @@ def main():
         d_v0 = np.linalg.norm(objects[0]["v0"] - objects[1]["v0"])
         d_v1 = np.linalg.norm(objects[0]["v1"] - objects[1]["v1"])
         e = d_v1 / d_v0
-        print(e)
+        print(d_v0, d_v1, e)
 
 
 
