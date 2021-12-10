@@ -5,4 +5,5 @@ qualisys_2d/*
 qualisys_linear/*
 results_linear/*
 analyzed_collisions/*
+analyzed_collisions.tsv
 __pycache__
