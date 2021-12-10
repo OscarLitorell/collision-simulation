@@ -1,4 +1,8 @@
 .MATLABDriveTag
 results/*
 analyzed_results/*
+qualisys_2d/*
+qualisys_linear/*
+results_linear/*
+analyzed_collisions/*
 __pycache__
