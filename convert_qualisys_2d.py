@@ -6,17 +6,20 @@ import numpy as np
 
 
 def convert_qualisys_2d(file_path):
-    dirs = os.listdir(file_path)
-    for dir in dirs:
-        files = os.listdir(os.path.join(file_path, dir))
-        for file in files:	
+    dirs = os.walk(file_path)
+
+    for directory in dirs:
+        files = directory[2]
+        path = directory[0][len(file_path) + 1:]
+        for file in files:
             if file.endswith('.tsv'):
-                if not os.path.exists(f"results/{dir}_{file[:-4]}"):
-                    os.mkdir(f"results/{dir}_{file[:-4]}")
-                file_name = os.path.join(file_path, dir, file)
+                new_fp = os.path.join("results", path, file[:-4])
+                if not os.path.exists(new_fp):
+                    os.makedirs(new_fp)
+                file_name = os.path.join(file_path, path, file)
                 converted_files = convert_file(file_name)
                 for i, converted_file in enumerate(converted_files):
-                    np.savetxt(f"results/{dir}_{file[:-4]}/marker{i}.tsv", converted_file, delimiter="\t")
+                    np.savetxt(os.path.join(new_fp,f"marker{i}.tsv"), converted_file, delimiter="\t")
 
 
 def convert_file(filepath):
@@ -33,7 +36,7 @@ def convert_file(filepath):
 
         header = lines[10]
         data_text = lines[11:]
-        data = np.array(data_text).astype(np.float)
+        data = np.array(data_text).astype(float)
         marker_count = (len(header) - 3) / 3
         marker_names = metadata["marker_names"]
         timestamps = data[:,1]
@@ -52,6 +55,9 @@ def convert_file(filepath):
         trajectories_with_time = []
 
         marker_trajectories = xy_coords(marker_trajectories)
+        if len(marker_trajectories) not in [3, 6]:
+            print(len(marker_trajectories), filepath)
+            return []
 
         for mt in marker_trajectories:
             trajectories_with_time.append(np.hstack((timestamps.reshape(len(timestamps), 1), mt)))
@@ -94,5 +100,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-main()
