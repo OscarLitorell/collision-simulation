@@ -19,18 +19,18 @@ def detect_marker_positions(results_path):
 
 
 def main():
-    puck_spins = [
-        "alu-disks-spins_T2",
-        "alu-disks-spins_Y2"
-    ]
-
+    dirs = os.walk("results")
+    dirs = [d for d in dirs if len(d[2]) > 0 and "spin" in d[0]]
+    
     constellations = []
 
-    for spin in puck_spins:
-        constellations += detect_marker_positions(f"results/{spin}")
+    for d in dirs:
+        constellations += detect_marker_positions(d[0])
 
     for i, constellation in enumerate(constellations):
-        ra.save_constellation(constellation, f"analyzed_results/constellations/{i}.tsv")
+        p = dirs[i][0]
+        path = dirs[i][0][len("results\\"):]
+        ra.save_constellation(constellation, f"analyzed_results/constellations/{path}.tsv")
 
 
 
