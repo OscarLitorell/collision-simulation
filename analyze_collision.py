@@ -12,7 +12,7 @@ import json
 import glob
 
 def filter(data, axis=0):
-    return signal.savgol_filter(data, 51, 1, axis=axis)
+    return signal.savgol_filter(data, 13, 1, axis=axis)
 
 def main(name):
     directory = f"analyzed_results/movement/{name}"
