@@ -20,7 +20,7 @@ def detect_marker_positions(results_path):
 
 def main():
     dirs = os.walk("results")
-    dirs = [d for d in dirs if len(d[2]) > 0 and "spin" in d[0]]
+    dirs = [d for d in dirs if len(d[2]) > 0 and "spins" in d[0]]
     
     constellations = []
 
