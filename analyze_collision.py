@@ -3,10 +3,7 @@ import os
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.ndimage.interpolation import _prepad_for_spline_filter
 import scipy.signal as signal
-from scipy.signal.filter_design import normalize
-from scipy.signal.ltisys import impulse
 import results_analysis as ra
 import json
 import glob
@@ -20,9 +17,11 @@ def main(name):
 
     group = os.path.normpath(name).split(os.path.sep)[0]
 
-    constellations_path = os.path.join("analyzed_results", "constellations", group)
+    disk_data_paths = f"qualisys_2d/{group}"
 
-    all_constellations = dict((os.path.split(file)[-1][:-5], file) for file in glob.iglob(f"{constellations_path}/**/*.json", recursive=True))
+    # constellations_path = os.path.join("analyzed_results", "constellations", group)
+
+    all_disks = dict((os.path.split(file)[-1][:-5], file) for file in glob.iglob(f"{disk_data_paths}/**/*.json", recursive=True))
 
 
     collision_info = []
@@ -34,7 +33,7 @@ def main(name):
         
         dt = np.loadtxt(f"{directory}/dt.txt", delimiter="\t")
 
-        with open(all_constellations[object]) as f:
+        with open(all_disks[object]) as f:
             object_info = json.load(f)
             print(f)
         print(object_info)
