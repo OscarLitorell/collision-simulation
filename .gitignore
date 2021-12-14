@@ -7,4 +7,5 @@ results_linear/*
 analyzed_collisions/*
 analyzed_collisions.tsv
 simulation_configs/*
+raw_data/*
 __pycache__
