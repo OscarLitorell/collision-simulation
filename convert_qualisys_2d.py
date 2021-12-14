@@ -63,6 +63,7 @@ def convert_file(filepath):
             trajectories_with_time.append(np.hstack((timestamps.reshape(len(timestamps), 1), mt)))
         return trajectories_with_time
 
+
 def xy_coords(trajectories):
     # points.shape = (point_count, 3)
     trajectory_centers = [t.mean(axis=0) for t in trajectories]
@@ -97,6 +98,7 @@ def find_normal(points):
 def main():
     file_path = "qualisys_2d"
     convert_qualisys_2d(file_path)
+
 
 if __name__ == '__main__':
     main()
