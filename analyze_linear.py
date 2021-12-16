@@ -13,8 +13,6 @@ def convert_qualisys(files_path):
         group_path = os.path.join(files_path, group)
         files = [file for file in os.listdir(group_path) if file.endswith(".tsv")]
         for file in files:
-            if not os.path.exists(os.path.join(group_path, file[:-4])):
-                os.mkdir(os.path.join(group_path, file[:-4]))
             with open(os.path.join(group_path, file), "r") as text:
                 lines = text.readlines()
                 lines = [line[:-1].split("\t") for line in lines]
@@ -59,6 +57,16 @@ def filter(data, axis=0):
 def main():
     convert_qualisys("qualisys_linear")
 
+    g = []
+    name = []
+    mass_0 = []
+    mass_1 = []
+    v_0_before = []
+    v_1_before = []
+    v_0_after = []
+    v_1_after = []
+
+
     groups = os.listdir("results_linear")
     for group in groups:
 
@@ -99,10 +107,31 @@ def main():
                     "v1": vel_after_f[0],
                     "m": mass
                 })
-            d_v0 = np.linalg.norm(objects[0]["v0"] - objects[1]["v0"])
-            d_v1 = np.linalg.norm(objects[0]["v1"] - objects[1]["v1"])
-            e = d_v1 / d_v0
-            print(d_v0, d_v1, e)
+
+            g.append(group)
+            name.append(dir)
+            mass_0.append(objects[0]["m"])
+            mass_1.append(objects[1]["m"])
+            v_0_before.append(objects[0]["v0"])
+            v_1_before.append(objects[1]["v0"])
+            v_0_after.append(objects[0]["v1"])
+            v_1_after.append(objects[1]["v1"])
+    
+    g = np.array(g)
+    name = np.array(name)
+    mass_0 = np.array(mass_0)
+    mass_1 = np.array(mass_1)
+    v_0_before = np.array(v_0_before)
+    v_1_before = np.array(v_1_before)
+    v_0_after = np.array(v_0_after)
+    v_1_after = np.array(v_1_after)
+
+    d_v_before = np.linalg.norm(v_0_before - v_1_before, axis=1)
+    d_v_after = np.linalg.norm(v_0_after - v_1_after, axis=1)
+    e = d_v_after / d_v_before
+
+    input("Press enter to continue")
+
 
 
 
