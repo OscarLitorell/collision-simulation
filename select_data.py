@@ -1,7 +1,8 @@
 
 
 import numpy as np
-
+import os
+import matplotlib.pyplot as plt
 
 
 def main():
@@ -47,11 +48,15 @@ def main():
     moment_of_inertia_0 = np.array(cols[header.index("moment_of_inertia_0")]).astype(float)
     moment_of_inertia_1 = np.array(cols[header.index("moment_of_inertia_1")]).astype(float)
         
+    group = [os.path.normpath(n).split(os.path.sep)[0] for n in name]
+    groups = list(set(group))
+    group = np.array(group)
+
+
+
+
 
     input("Press enter to continue...")
-
-
-
 
 if __name__ == '__main__':
     main()
