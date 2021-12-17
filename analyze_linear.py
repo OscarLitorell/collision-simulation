@@ -3,6 +3,7 @@ import numpy as np
 
 import analyze_collision
 import scipy.signal as signal
+import matplotlib.pyplot as plt
 
 
 def convert_qualisys(files_path):
