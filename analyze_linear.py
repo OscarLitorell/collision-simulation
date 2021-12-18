@@ -131,12 +131,11 @@ def main():
     d_v_after = np.linalg.norm(v_0_after - v_1_after, axis=1)
     e = d_v_after / d_v_before
 
-
     fig, ax = plt.subplots()
-    # ax.scatter(x=groups, y=[e[g == group] for group in groups])
     ax.scatter(x=g, y=e)
-    plt.xlabel("Group")
-    plt.ylabel("Elasticity coefficient")
+    plt.xlabel("Diskar")
+    plt.ylabel("Elasticitetskoefficient")
+    plt.title("Elasticitetskoefficient")
     plt.show()
 
 
