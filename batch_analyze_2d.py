@@ -8,26 +8,33 @@ from sys import argv
 
 import os
 
-def wait(yes):
-    if yes:
-        input("Press enter to continue...")
+def wait(step_through, message, func):
+    if step_through:
+        print(message)
+        ans = input("Press enter to continue, or 's' to skip\n")
+        if ans == "s":
+            print("Skipping...")
+        else:
+            func()
+    else:
+        func()
 
-def main(step_through):
-    print("Converting qualisys data...")
-    convert_qualisys_2d.main()
-    print("Detecting marker positions...")
-    wait(step_through)
-    detect_marker_positions.main()
+def calculate_movement_and_analyze_collisions():
     collision_names = [p[0] for p in os.walk("results") if "collisions" in p[0].split(os.path.sep) and len(p[2]) > 0]
     collision_names = [name[len("results/"):] for name in collision_names]
-    print("Calculating movement and analyzing collisions...")
-    wait(step_through)
     for c in collision_names:
         calculate_movement.main(c, False)
         analyze_collision.main(c)
-    print("Compiling analyzed collisions...")
-    wait(step_through)
-    compile_analyzed_collisions_2d.main()
+
+    
+
+def main(step_through):
+
+    wait(step_through, "Converting Qualisys 2D data", convert_qualisys_2d.main)
+    wait(step_through, "Detecting marker positions", detect_marker_positions.main)
+    wait(step_through, "Calculating movement and collisions", calculate_movement_and_analyze_collisions)
+    wait(step_through, "Compiling analyzed collisions", compile_analyzed_collisions_2d.main)
+
     print("Done")
 
 if __name__ == '__main__':
