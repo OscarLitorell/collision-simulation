@@ -11,15 +11,13 @@ import glob
 def filter(data, axis=0):
     return signal.savgol_filter(data, 13, 1, axis=axis)
 
-def main(name):
+def main(name, do_print=False):
     directory = f"analyzed_results/movement/{name}"
     objects = [f for f in os.listdir(directory) if os.path.isdir(os.path.join(directory, f))]
 
     group = os.path.normpath(name).split(os.path.sep)[0]
 
     disk_data_paths = f"qualisys_2d/{group}"
-
-    # constellations_path = os.path.join("analyzed_results", "constellations", group)
 
     all_disks = dict((os.path.split(file)[-1][:-5], file) for file in glob.iglob(f"{disk_data_paths}/**/*.json", recursive=True))
 
@@ -35,8 +33,8 @@ def main(name):
 
         with open(all_disks[object]) as f:
             object_info = json.load(f)
-            print(f)
-        print(object_info)
+        if do_print:
+            print(object_info)
 
         pos_f = filter(pos, axis=0)
         vel = np.gradient(pos_f, axis=0) / dt
@@ -92,8 +90,6 @@ def main(name):
     rel_tangent_vel_after = np.dot(collision_info[0]["vel"][1] - collision_info[1]["vel"][1], tangent)
     rel_tangent_vel_after += collision_info[0]["radius"] * collision_info[0]["rot_vel"][1]
     rel_tangent_vel_after -= collision_info[1]["radius"] * collision_info[1]["rot_vel"][1]
-    print("Relative tangent velocity before:", rel_tangent_vel_before)
-    print("Relative tangent velocity after:", rel_tangent_vel_after)
     rel_normal_vel_before = abs(np.dot(collision_info[0]["vel"][0] - collision_info[1]["vel"][0], normal))
     rel_normal_vel_after = abs(np.dot(collision_info[0]["vel"][1] - collision_info[1]["vel"][1], normal))
 
@@ -103,29 +99,33 @@ def main(name):
     momentum_1_after = collision_info[1]["mass"] * collision_info[1]["vel"][1]
     momentum_before = momentum_0_before + momentum_1_before
     momentum_after = momentum_0_after + momentum_1_after
-    print("Momentum before:", momentum_before)
-    print("Momentum after:", momentum_after)
     impulse_0 = momentum_0_before - momentum_0_after
     impulse_1 = momentum_1_before - momentum_1_after
     impulse = (impulse_0 - impulse_1) / 2
     normal_impulse = np.dot(impulse, normal)
     tangent_impulse = np.dot(impulse, tangent)
-    print("Normal impulse:", normal_impulse)
-    print("Tangent impulse:", tangent_impulse)
     fric_coeff = abs(tangent_impulse / normal_impulse)
-    print("Friction coefficient:", fric_coeff)
 
     rel_normal_vel_before = np.dot(collision_info[0]["vel"][0] - collision_info[1]["vel"][0], normal)
     rel_normal_vel_after = np.dot(collision_info[0]["vel"][1] - collision_info[1]["vel"][1], normal)
-    print("Relative normal velocity before:", rel_normal_vel_before)
-    print("Relative normal velocity after:", rel_normal_vel_after)
 
     
     e = abs(rel_normal_vel_after / rel_normal_vel_before)
-    print("Elasiticity coefficient:", e)
 
     moment_of_inertia_0 = abs(tangent_impulse * collision_info[0]["radius"] / (collision_info[0]["rot_vel"][1] - collision_info[0]["rot_vel"][0]))
     moment_of_inertia_1 = abs(tangent_impulse * collision_info[1]["radius"] / (collision_info[1]["rot_vel"][1] - collision_info[1]["rot_vel"][0]))
+
+    if do_print:
+        print("Relative tangent velocity before:", rel_tangent_vel_before)
+        print("Relative tangent velocity after:", rel_tangent_vel_after)
+        print("Momentum before:", momentum_before)
+        print("Momentum after:", momentum_after)
+        print("Normal impulse:", normal_impulse)
+        print("Tangent impulse:", tangent_impulse)
+        print("Friction coefficient:", fric_coeff)
+        print("Relative normal velocity before:", rel_normal_vel_before)
+        print("Relative normal velocity after:", rel_normal_vel_after)
+        print("Elasiticity coefficient:", e)
 
     collision_properties = {
         "name": name,
@@ -140,7 +140,7 @@ def main(name):
         "vel_0_after_x": collision_info[0]["vel"][1][0],
         "vel_0_after_y": collision_info[0]["vel"][1][1],
         "vel_1_after_x": collision_info[1]["vel"][1][0],
-        "vel_1_after_y": collision_info[1]["vel"][1][0],
+        "vel_1_after_y": collision_info[1]["vel"][1][1],
         "rot_vel_0_before": collision_info[0]["rot_vel"][0],
         "rot_vel_1_before": collision_info[1]["rot_vel"][0],
         "rot_vel_0_after": collision_info[0]["rot_vel"][1],
@@ -175,7 +175,7 @@ def main(name):
 if __name__ == '__main__':
     try:
         name = argv[1]
-        main(name)
+        main(name, "-p" in argv)
     except IndexError:
         print("Please specify an experiment name")
         exit(1)
