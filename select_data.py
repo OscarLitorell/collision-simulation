@@ -54,6 +54,14 @@ def main():
 
 
 
+    for g in groups:
+        print(g)
+        mask = group == g
+        x = abs(normal_impulse[mask])
+        y = e[mask]
+        plt.plot(x, y, "o")
+        plt.show()
+        
 
 
     input("Press enter to continue...")
