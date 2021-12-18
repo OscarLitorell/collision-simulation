@@ -68,7 +68,10 @@ def main():
         "aluRub-aluBig\\collisions\\T_aluBig_Y-aluRub0020",
         "aluRub-aluThi\\collisions\\Y_aluThi_T-aluRub0011",
         "aluTunn-alu\\collisions\\Y_aluTunn_Y_alu0003",
-        "alu-aluRub\\collisions\\T-alu_Y-aluRub_2cm0017"
+        "alu-aluRub\\collisions\\T-alu_Y-aluRub_2cm0017",
+        "alu-aluRub\\collisions\\T-alu_Y-aluRub_2cm0017",
+        "aluBig-aluThi\\collisions\\Y_aluThi_T-aluBig_1cm0004",
+        "aluBig-alu\\collisions\\T_aluBig_Y-alu_spin0031"
     ]
 
     sel = np.array([n not in blacklist for n in name])
