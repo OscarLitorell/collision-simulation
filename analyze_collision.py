@@ -26,6 +26,7 @@ def main(name, do_print=False):
 
     accs = []
     motion = []
+    obj_infos = []
 
     for object in objects:
         pos = np.loadtxt(f"{directory}/{object}/position.tsv", delimiter="\t")
@@ -37,6 +38,7 @@ def main(name, do_print=False):
 
         with open(all_disks[object]) as f:
             object_info = json.load(f)
+            obj_infos.append(object_info)
         if do_print:
             print(object_info)
 
@@ -52,7 +54,7 @@ def main(name, do_print=False):
         cd = np.diff(coll).clip(0, 1)
 
         hits = np.sum(cd)
-        if hits != 1:
+        if hits != 1 and do_print:
             plt.plot(np.sqrt(acc_mag_sq))
             plt.title(f"{name} {object}")
             print(name)
@@ -63,6 +65,7 @@ def main(name, do_print=False):
     
     for i, object in enumerate(objects):
         pos, rot = motion[i]
+        object_info = obj_infos[i]
 
         pos_before = pos[:max_acc_index]
         pos_after = pos[max_acc_index:]
