@@ -38,6 +38,10 @@ def convert_file(filepath):
         data_text = lines[11:]
         data = np.array(data_text).astype(float)
         marker_count = (len(header) - 3) / 3
+        
+        if marker_count not in [3, 6]:
+            print(marker_count, filepath)
+            return []
         marker_names = metadata["marker_names"]
         timestamps = data[:,1]
         marker_trajectories = []
@@ -49,6 +53,10 @@ def convert_file(filepath):
             marker_ranges.append(marker_range)
 
         marker_ranges = np.all(np.array(marker_ranges), axis=0)
+        if False in marker_ranges:
+            print(filepath)
+            return []
+            
         marker_trajectories = [mt[marker_ranges] for mt in marker_trajectories]
         timestamps = timestamps[marker_ranges]
 
