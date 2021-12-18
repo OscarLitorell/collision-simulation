@@ -24,10 +24,14 @@ def main(name, do_print=False):
 
     collision_info = []
 
+    accs = []
+    motion = []
+
     for object in objects:
         pos = np.loadtxt(f"{directory}/{object}/position.tsv", delimiter="\t")
         rot = np.loadtxt(f"{directory}/{object}/rotation.tsv", delimiter="\t")
         rot = np.unwrap(rot)
+        motion.append((pos, rot))
         
         dt = np.loadtxt(f"{directory}/dt.txt", delimiter="\t")
 
@@ -42,7 +46,23 @@ def main(name, do_print=False):
         acc = np.gradient(vel_f, axis=0) / dt
         acc_f = filter(acc, axis=0)
         acc_mag_sq = np.sum(acc_f**2, axis=1)
-        max_acc_index = np.argmax(acc_mag_sq)
+
+        accs.append(acc_mag_sq)
+        coll = (acc_mag_sq > 1).astype(float)
+        cd = np.diff(coll).clip(0, 1)
+
+        hits = np.sum(cd)
+        if hits != 1:
+            plt.plot(np.sqrt(acc_mag_sq))
+            plt.title(f"{name} {object}")
+            print(name)
+            plt.show()
+
+
+    max_acc_index = np.argmax(accs[0] * accs[1])
+    
+    for i, object in enumerate(objects):
+        pos, rot = motion[i]
 
         pos_before = pos[:max_acc_index]
         pos_after = pos[max_acc_index:]
