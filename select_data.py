@@ -55,6 +55,7 @@ def main():
     momentum_diff_x = total_momentum_after_x - total_momentum_before_x
     momentum_diff_y = total_momentum_after_y - total_momentum_before_y
     momentum_diff = np.sqrt(momentum_diff_x**2 + momentum_diff_y**2)
+
         
     group = [os.path.normpath(n).split(os.path.sep)[0] for n in name]
     groups = list(set(group))
@@ -70,23 +71,26 @@ def main():
         "aluTunn-alu\\collisions\\Y_aluTunn_Y_alu0003",
         "alu-aluRub\\collisions\\T-alu_Y-aluRub_2cm0017",
         "alu-aluRub\\collisions\\T-alu_Y-aluRub_2cm0017",
-        "aluBig-aluThi\\collisions\\Y_aluThi_T-aluBig_1cm0004",
-        "aluBig-alu\\collisions\\T_aluBig_Y-alu_spin0031"
+        "aluBig-aluThi\\collisions\\Y_aluThi_T-aluBig_1cm0004"
     ]
 
     sel = np.array([n not in blacklist for n in name])
 
 
-    fig, ax = plt.subplots()
-    ax.scatter(x=group[sel], y=momentum_diff[sel])
+    plt.scatter(x=group[sel], y=momentum_diff[sel])
+    plt.title("Skillnad i rörelsemängd mellan före och efter kollision")
     plt.show()
+
+    # plt.scatter(x=group[sel], y=e[sel])
+    # plt.title("Elasticitetskoefficient")
+    # plt.show()
 
 
 
     for g in groups:
         print(g)
         mask = np.all([group==g, sel], axis=0)
-        x = abs(normal_impulse[mask])
+        x = abs(rel_normal_vel_before[mask])
         y = e[mask]
         plt.plot(x, y, "o")
         plt.title(g)
