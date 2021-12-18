@@ -131,6 +131,28 @@ def main():
     d_v_after = np.linalg.norm(v_0_after - v_1_after, axis=1)
     e = d_v_after / d_v_before
 
+
+    fig, ax = plt.subplots()
+    # ax.scatter(x=groups, y=[e[g == group] for group in groups])
+    ax.scatter(x=g, y=e)
+    plt.xlabel("Group")
+    plt.ylabel("Elasticity coefficient")
+    plt.show()
+
+
+    # for group in groups:
+    #     mask = g == group
+    #     print(group)
+
+    #     x = d_v_before[mask]
+    #     y = e[mask]
+
+    #     plt.plot(x, y, "o")
+    #     plt.xlabel("d_v_before")
+    #     plt.ylabel("e")
+    #     plt.show()
+
+
     input("Press enter to continue")
 
 
