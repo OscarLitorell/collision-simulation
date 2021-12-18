@@ -60,15 +60,6 @@ def main():
     groups = list(set(group))
     group = np.array(group)
 
-
-
-    for g in groups:
-        print(g)
-        mask = group == g
-        x = abs(normal_impulse[mask])
-        y = e[mask]
-        plt.plot(x, y, "o")
-        plt.show()
         
     blacklist = [
         "aluBig-alu\\collisions\\T_aluBig_Y-alu_spin0031",
