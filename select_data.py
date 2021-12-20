@@ -76,25 +76,61 @@ def main():
 
     sel = np.array([n not in blacklist for n in name])
 
-
-    plt.scatter(x=group[sel], y=momentum_diff[sel])
-    plt.title("Skillnad i rörelsemängd mellan före och efter kollision")
-    plt.show()
-
-    # plt.scatter(x=group[sel], y=e[sel])
-    # plt.title("Elasticitetskoefficient")
-    # plt.show()
-
-
-
-    for g in groups:
-        print(g)
-        mask = np.all([group==g, sel], axis=0)
-        x = abs(rel_normal_vel_before[mask])
-        y = e[mask]
-        plt.plot(x, y, "o")
-        plt.title(g)
+    def plot_momentum_diff():
+        plt.scatter(x=group[sel], y=momentum_diff[sel])
+        plt.title("Skillnad i rörelsemängd mellan före och efter kollision")
         plt.show()
+
+    def plot_e():
+        plt.scatter(x=group[sel], y=e[sel])
+        plt.title("Elasticitetskoefficient")
+        plt.show()
+
+    def plot_fric_coeff():
+        plt.scatter(x=group[sel], y=fric_coeff[sel])
+        plt.title("Friktionskoefficient")
+        plt.show()
+
+    def plot_tangent_velocities_and_friction():
+        rub_rub = np.array(["aluRub-aluRub" in g for g in group])
+        rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
+        sels = [
+            ("båda gummi", np.all([rub_rub, sel], axis=0)),
+            ("ena gummi", np.all([rub, sel], axis=0)),
+            ("aluminium", np.all([~rub, ~rub_rub, sel], axis=0))
+        ]
+
+        for name, s in sels:
+            sign = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
+            x = rel_tangent_vel_before[s] * sign
+            y = fric_coeff[s]
+            dx = (rel_tangent_vel_after[s] - rel_tangent_vel_before[s]) * sign
+            dy = 0
+
+            for i in range(len(x)):
+                plt.arrow(x[i], y[i], dx[i], dy, head_width=0, head_length=0, fc='#888888', ec='#888888')
+            plt.plot(x, fric_coeff[s], '.')
+            plt.plot(x+dx, fric_coeff[s], '.')
+            plt.grid()
+            plt.title(f"Friktionskoefficient mot tangenthastighet, {name}")
+            plt.xlabel("rel. tangenthastighet")
+            plt.ylabel("Friktionskoefficient")
+            plt.show()
+
+    plot_tangent_velocities_and_friction()
+    
+    def plot_normal_vel_and_e():
+        for g in groups:
+            print(g)
+            mask = np.all([group==g, sel], axis=0)
+            x = abs(rel_normal_vel_before[mask])
+            # x = abs(rel_tangent_vel_before[mask])
+            y = e[mask]
+            plt.plot(x, y, "o")
+            plt.xlabel("|rel. normalrörelse|")
+            plt.ylabel("Elasticitetskoefficient")
+            plt.title(g)
+            plt.show()
         
 
     input("Press enter to continue...")
