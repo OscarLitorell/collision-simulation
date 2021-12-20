@@ -9,4 +9,5 @@ analyzed_collisions.tsv
 simulation_configs/*
 raw_data/*
 *.zip
+.vscode
 __pycache__
