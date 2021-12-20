@@ -81,15 +81,21 @@ def main():
         plt.title("Skillnad i rörelsemängd mellan före och efter kollision")
         plt.show()
 
+    x_group_y_momentum_diff()
+
     def x_group_y_e():
         plt.scatter(x=group[sel], y=e[sel])
         plt.title("Elasticitetskoefficient")
         plt.show()
 
+    x_group_y_e()
+
     def x_group_y_fric_coeff():
         plt.scatter(x=group[sel], y=fric_coeff[sel])
         plt.title("Friktionskoefficient")
         plt.show()
+
+    x_group_y_fric_coeff()
 
     def x_rel_tangent_vel_y_fric_coeff():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
@@ -132,6 +138,7 @@ def main():
             plt.title(g)
             plt.show()
         
+    x_rel_normal_vel_y_e()
 
     input("Press enter to continue...")
 
