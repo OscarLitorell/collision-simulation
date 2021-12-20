@@ -81,21 +81,18 @@ def main():
         plt.title("Skillnad i rörelsemängd mellan före och efter kollision")
         plt.show()
 
-    x_group_y_momentum_diff()
 
     def x_group_y_e():
         plt.scatter(x=group[sel], y=e[sel])
         plt.title("Elasticitetskoefficient")
         plt.show()
 
-    x_group_y_e()
 
     def x_group_y_fric_coeff():
         plt.scatter(x=group[sel], y=fric_coeff[sel])
         plt.title("Friktionskoefficient")
         plt.show()
 
-    x_group_y_fric_coeff()
 
     def x_rel_tangent_vel_y_fric_coeff():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
@@ -115,30 +112,87 @@ def main():
 
             for i in range(len(x)):
                 plt.arrow(x[i], y[i], dx[i], dy, head_width=0, head_length=0, fc='#888888', ec='#888888')
-            plt.plot(x, fric_coeff[s], '.')
-            plt.plot(x+dx, fric_coeff[s], '.')
+            plt.plot(x, y, '.')
+            plt.plot(x+dx, y, '.')
             plt.grid()
             plt.title(f"Friktionskoefficient mot tangenthastighet, {name}")
             plt.xlabel("rel. tangenthastighet")
             plt.ylabel("Friktionskoefficient")
             plt.show()
 
-    x_rel_tangent_vel_y_fric_coeff()
+
+    def x_rel_normal_vel_y_fric_coeff():
+        rub_rub = np.array(["aluRub-aluRub" in g for g in group])
+        rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
+        sels = [
+            ("båda gummi", np.all([rub_rub, sel], axis=0)),
+            ("ena gummi", np.all([rub, sel], axis=0)),
+            ("aluminium", np.all([~rub, ~rub_rub, sel], axis=0))
+        ]
+
+        for name, s in sels:
+            sign = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
+            x = rel_normal_vel_before[s] * sign
+            y = fric_coeff[s]
+
+            plt.plot(x, y, '.')
+            plt.grid()
+            plt.title(f"Friktionskoefficient mot normalhastighet, {name}")
+            plt.xlabel("rel. normalhastighet")
+            plt.ylabel("Friktionskoefficient")
+            plt.show()
+    
+
+    def x_rel_tangent_vel_y_e():
+        rub_rub = np.array(["aluRub-aluRub" in g for g in group])
+        rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
+        sels = [
+            ("båda gummi", np.all([rub_rub, sel], axis=0)),
+            ("ena gummi", np.all([rub, sel], axis=0)),
+            ("aluminium", np.all([~rub, ~rub_rub, sel], axis=0))
+        ]
+
+        for name, s in sels:
+            sign = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
+            x = rel_tangent_vel_before[s] * sign
+            y = e[s]
+
+            plt.plot(x, y, '.')
+            plt.grid()
+            plt.title(f"Elasticitetskoefficient mot tangenthastighet, {name}")
+            plt.xlabel("rel. tangenthastighet")
+            plt.ylabel("Elasticitetskoefficient")
+            plt.show()
+
     
     def x_rel_normal_vel_y_e():
-        for g in groups:
-            print(g)
-            mask = np.all([group==g, sel], axis=0)
-            x = abs(rel_normal_vel_before[mask])
-            # x = abs(rel_tangent_vel_before[mask])
-            y = e[mask]
-            plt.plot(x, y, "o")
-            plt.xlabel("|rel. normalrörelse|")
+        rub_rub = np.array(["aluRub-aluRub" in g for g in group])
+        rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
+        sels = [
+            ("båda gummi", np.all([rub_rub, sel], axis=0)),
+            ("ena gummi", np.all([rub, sel], axis=0)),
+            ("aluminium", np.all([~rub, ~rub_rub, sel], axis=0))
+        ]
+
+        for name, s in sels:
+            sign = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
+            x = rel_normal_vel_before[s] * sign
+            y = e[s]
+
+            plt.plot(x, y, '.')
+            plt.grid()
+            plt.title(f"Elasticitetskoefficient mot normalhastighet, {name}")
+            plt.xlabel("rel. normalhastighet")
             plt.ylabel("Elasticitetskoefficient")
-            plt.title(g)
             plt.show()
         
-    x_rel_normal_vel_y_e()
+    # x_group_y_momentum_diff()
+    # x_group_y_e()
+    # x_group_y_fric_coeff()
+    # x_rel_tangent_vel_y_fric_coeff()
+    # x_rel_normal_vel_y_fric_coeff()
+    # x_rel_tangent_vel_y_e()
+    # x_rel_normal_vel_y_e()
 
     input("Press enter to continue...")
 
