@@ -76,22 +76,22 @@ def main():
 
     sel = np.array([n not in blacklist for n in name])
 
-    def plot_momentum_diff():
+    def x_group_y_momentum_diff():
         plt.scatter(x=group[sel], y=momentum_diff[sel])
         plt.title("Skillnad i rörelsemängd mellan före och efter kollision")
         plt.show()
 
-    def plot_e():
+    def x_group_y_e():
         plt.scatter(x=group[sel], y=e[sel])
         plt.title("Elasticitetskoefficient")
         plt.show()
 
-    def plot_fric_coeff():
+    def x_group_y_fric_coeff():
         plt.scatter(x=group[sel], y=fric_coeff[sel])
         plt.title("Friktionskoefficient")
         plt.show()
 
-    def plot_tangent_velocities_and_friction():
+    def x_rel_tangent_vel_y_fric_coeff():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
         sels = [
@@ -117,9 +117,9 @@ def main():
             plt.ylabel("Friktionskoefficient")
             plt.show()
 
-    plot_tangent_velocities_and_friction()
+    x_rel_tangent_vel_y_fric_coeff()
     
-    def plot_normal_vel_and_e():
+    def x_rel_normal_vel_y_e():
         for g in groups:
             print(g)
             mask = np.all([group==g, sel], axis=0)
