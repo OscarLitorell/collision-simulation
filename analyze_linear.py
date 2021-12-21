@@ -27,7 +27,7 @@ def convert_qualisys(files_path):
 
                 header = lines[10]
                 data_text = lines[11:]
-                data = np.array(data_text).astype(np.float)
+                data = np.array(data_text).astype(float)
                 marker_count = (len(header) - 3) / 3
                 marker_names = metadata["marker_names"]
                 timestamps = data[:,1]
