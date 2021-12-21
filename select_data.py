@@ -185,6 +185,60 @@ def main():
             plt.xlabel("rel. normalhastighet")
             plt.ylabel("Elasticitetskoefficient")
             plt.show()
+
+    def x_rel_normal_vel_y_tangent_vel_z_fric_coeff():
+        rub_rub = np.array(["aluRub-aluRub" in g for g in group])
+        rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
+        sels = [
+            ("båda gummi", np.all([rub_rub, sel], axis=0)),
+            ("ena gummi", np.all([rub, sel], axis=0)),
+            ("aluminium", np.all([~rub, ~rub_rub, sel], axis=0))
+        ]
+
+        for name, s in sels:
+            sign_n = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
+            sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
+            x = rel_normal_vel_before[s] * sign_n
+            y = rel_tangent_vel_before[s] * sign_t
+            z = fric_coeff[s]           
+
+            fig = plt.figure()
+            ax = plt.axes(projection='3d')
+            ax.scatter3D(x, y, z)
+            plt.title(f"Elasticitetskoefficient mot normalhastighet och tangenthastighet, {name}")
+            ax.set_xlabel("rel. normalhastighet")
+            ax.set_ylabel("rel. tangenthastighet")
+            ax.set_zlabel("Friktionskoefficient")
+            plt.show()
+
+    def x_rel_normal_vel_y_tangent_vel_z_e():
+        rub_rub = np.array(["aluRub-aluRub" in g for g in group])
+        rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
+        sels = [
+            ("båda gummi", np.all([rub_rub, sel], axis=0)),
+            ("ena gummi", np.all([rub, sel], axis=0)),
+            ("aluminium", np.all([~rub, ~rub_rub, sel], axis=0))
+        ]
+
+        for name, s in sels:
+            sign_n = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
+            sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
+            x = rel_normal_vel_before[s] * sign_n
+            y = rel_tangent_vel_before[s] * sign_t
+            z = e[s]           
+
+            fig = plt.figure()
+            ax = plt.axes(projection='3d')
+            ax.scatter3D(x, y, z)
+            plt.title(f"Elasticitetskoefficient mot normalhastighet och tangenthastighet, {name}")
+            ax.set_xlabel("rel. normalhastighet")
+            ax.set_ylabel("rel. tangenthastighet")
+            ax.set_zlabel("Elasticitetskoefficient")
+            plt.show()
+
+
+
+
         
     # x_group_y_momentum_diff()
     # x_group_y_e()
@@ -193,6 +247,8 @@ def main():
     # x_rel_normal_vel_y_fric_coeff()
     # x_rel_tangent_vel_y_e()
     # x_rel_normal_vel_y_e()
+    # x_rel_normal_vel_y_tangent_vel_z_fric_coeff()
+    # x_rel_normal_vel_y_tangent_vel_z_e()
 
     input("Press enter to continue...")
 
