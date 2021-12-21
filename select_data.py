@@ -62,10 +62,27 @@ def main():
     normal /= np.linalg.norm(normal, axis=1).reshape((normal.shape[0], 1))
     tangent = np.array([-normal[:, 1], normal[:, 0]]).T
 
-    momentum_before_0 = mass_0.reshape((len(mass_0), 1)) * np.array([vel_0_before_x, vel_0_before_y]).T
-    momentum_before_1 = mass_1.reshape((len(mass_1), 1)) * np.array([vel_1_before_x, vel_1_before_y]).T
-    momentum_after_0 = mass_0.reshape((len(mass_0), 1)) * np.array([vel_0_after_x, vel_0_after_y]).T
-    momentum_after_1 = mass_1.reshape((len(mass_1), 1)) * np.array([vel_1_after_x, vel_1_after_y]).T
+    common_vel_x = (mass_0 * vel_0_before_x + mass_1 * vel_1_before_x) / (mass_0 + mass_1)
+    common_vel_y = (mass_0 * vel_0_before_y + mass_1 * vel_1_before_y) / (mass_0 + mass_1)
+    common_vel_normal = normal[:, 0] * common_vel_x + normal[:, 1] * common_vel_y
+    vel_0_before_normal = normal[:, 0] * vel_0_before_x + normal[:, 1] * vel_0_before_y
+    vel_1_before_normal = normal[:, 0] * vel_1_before_x + normal[:, 1] * vel_1_before_y
+    vel_0_after_normal = normal[:, 0] * vel_0_after_x + normal[:, 1] * vel_0_after_y
+    vel_1_after_normal = normal[:, 0] * vel_1_after_x + normal[:, 1] * vel_1_after_y
+
+    energy_before_0_normal = 0.5 * mass_0 * (vel_0_before_normal - common_vel_normal)**2
+    energy_before_1_normal = 0.5 * mass_1 * (vel_1_before_normal - common_vel_normal)**2
+    energy_after_0_normal = 0.5 * mass_0 * (vel_0_after_normal - common_vel_normal)**2
+    energy_after_1_normal = 0.5 * mass_1 * (vel_1_after_normal - common_vel_normal)**2
+    energy_before_normal = energy_before_0_normal + energy_before_1_normal
+    energy_after_normal = energy_after_0_normal + energy_after_1_normal
+
+
+    momentum_before_0 = mass_0.reshape((len(mass_0), 1)) * np.array([vel_0_before_x - common_vel_x, vel_0_before_y - common_vel_y]).T
+    momentum_before_1 = mass_1.reshape((len(mass_1), 1)) * np.array([vel_1_before_x - common_vel_x, vel_1_before_y - common_vel_y]).T
+    momentum_after_0 = mass_0.reshape((len(mass_0), 1)) * np.array([vel_0_after_x - common_vel_x, vel_0_after_y - common_vel_y]).T
+    momentum_after_1 = mass_1.reshape((len(mass_1), 1)) * np.array([vel_1_after_x - common_vel_x, vel_1_after_y - common_vel_y]).T
+
     rel_momentum_before = momentum_before_0 - momentum_before_1
     rel_momentum_after = momentum_after_0 - momentum_after_1
     rel_normal_momentum_before = rel_momentum_before[:, 0] * normal[:, 0] + rel_momentum_before[:, 1] * normal[:, 1]
@@ -73,7 +90,11 @@ def main():
     rel_normal_momentum_after = rel_momentum_after[:, 0] * normal[:, 0] + rel_momentum_after[:, 1] * normal[:, 1]
     rel_tangent_momentum_after = rel_momentum_after[:, 0] * tangent[:, 0] + rel_momentum_after[:, 1] * tangent[:, 1]
 
-        
+    momentum_scale = np.linalg.norm(rel_momentum_before, axis=1)
+
+
+
+    
     group = [os.path.normpath(n).split(os.path.sep)[0] for n in name]
     groups = list(set(group))
     group = np.array(group)
@@ -94,19 +115,19 @@ def main():
     sel = np.array([n not in blacklist for n in name])
 
     def x_group_y_momentum_diff():
-        plt.scatter(x=group[sel], y=momentum_diff[sel])
+        plt.scatter(x=group[sel], y=momentum_diff[sel] / momentum_scale[sel], marker="o", c="#00f3")
         plt.title("Skillnad i rörelsemängd mellan före och efter kollision")
         plt.show()
 
 
     def x_group_y_e():
-        plt.scatter(x=group[sel], y=e[sel])
+        plt.scatter(x=group[sel], y=e[sel], marker="o", c="#00f3")
         plt.title("Elasticitetskoefficient")
         plt.show()
 
 
     def x_group_y_fric_coeff():
-        plt.scatter(x=group[sel], y=fric_coeff[sel])
+        plt.scatter(x=group[sel], y=fric_coeff[sel], marker="o", c="#00f3")
         plt.title("Friktionskoefficient")
         plt.show()
 
@@ -128,17 +149,21 @@ def main():
             dy = 0
 
             for i in range(len(x)):
-                plt.arrow(x[i], y[i], dx[i], dy, head_width=0, head_length=0, fc='#888888', ec='#888888')
-            plt.plot(x, y, '.')
-            plt.plot(x+dx, y, '.')
+                plt.arrow(x[i], y[i], dx[i], dy, head_width=0, head_length=0, fc='#0004', ec='#0004')
+
+            static = x + dx > 0.1
+            plt.plot((x+dx)[static], y[static], 'r.')
+            plt.plot((x+dx)[~static], y[~static], 'bx')
+
+
             plt.grid()
-            plt.title(f"Friktionskoefficient mot tangenthastighet, {name}")
-            plt.xlabel("rel. tangenthastighet")
-            plt.ylabel("Friktionskoefficient")
+            plt.title(f"Friktionskoefficient mot relativ tangenthastighet, {name}")
+            plt.xlabel("Relativ tangenthastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
+            plt.ylabel("Friktionskoefficient ($\mu$), [1]")
             plt.show()
 
 
-    def x_rel_normal_vel_y_fric_coeff():
+    def x_normal_energy_y_fric_coeff():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
         sels = [
@@ -152,11 +177,14 @@ def main():
             x = rel_normal_vel_before[s] * sign
             y = fric_coeff[s]
 
-            plt.plot(x, y, '.')
+            sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
+            static = rel_tangent_vel_after[s] * sign_t > 0.1
+            plt.plot(x[static], y[static], 'r.')
+            plt.plot(x[~static], y[~static], 'bx')
             plt.grid()
-            plt.title(f"Friktionskoefficient mot normalhastighet, {name}")
-            plt.xlabel("rel. normalhastighet")
-            plt.ylabel("Friktionskoefficient")
+            plt.title(f"Friktionskoefficient mot normalenergi, {name}")
+            plt.xlabel("Energi i normalled, [J]")
+            plt.ylabel("Friktionskoefficient ($\mu$), [1]")
             plt.show()
     
 
@@ -177,12 +205,12 @@ def main():
             plt.plot(x, y, '.')
             plt.grid()
             plt.title(f"Elasticitetskoefficient mot tangenthastighet, {name}")
-            plt.xlabel("rel. tangenthastighet")
-            plt.ylabel("Elasticitetskoefficient")
+            plt.xlabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
+            plt.ylabel("Elasticitetskoefficient ($e$), [1]")
             plt.show()
 
     
-    def x_rel_normal_vel_y_e():
+    def x_normal_energy_y_e():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
         sels = [
@@ -198,12 +226,12 @@ def main():
 
             plt.plot(x, y, '.')
             plt.grid()
-            plt.title(f"Elasticitetskoefficient mot normalhastighet, {name}")
-            plt.xlabel("rel. normalhastighet")
-            plt.ylabel("Elasticitetskoefficient")
+            plt.title(f"Elasticitetskoefficient mot normalenergi, {name}")
+            plt.xlabel("Rörelseenergi från hastighet i normalled, [J]")
+            plt.ylabel("Elasticitetskoefficient ($e$), [1]")
             plt.show()
 
-    def x_rel_normal_momentum_y_tangent_vel_z_fric_coeff():
+    def x_normal_energy_y_tangent_vel_z_fric_coeff():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
         sels = [
@@ -213,9 +241,8 @@ def main():
         ]
 
         for name, s in sels:
-            sign_n = (rel_normal_momentum_before[s] > 0).astype(int) * 2 - 1
             sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
-            x = rel_normal_momentum_before[s] * sign_n
+            x = energy_before_normal[s]
             y = rel_tangent_vel_after[s] * sign_t
             z = fric_coeff[s]
 
@@ -230,16 +257,16 @@ def main():
 
             fig = plt.figure()
             ax = plt.axes(projection='3d')
-            # ax.scatter3D(x, y, z)
-            ax.scatter3D(x1, y1, z1, c='r', marker='o')
+            if len(x1) > 0:
+                ax.scatter3D(x1, y1, z1, c='r', marker='o')
             ax.scatter3D(x2, y2, z2, c='b', marker='o')
-            plt.title(f"Friktionskoefficient mot normalhastighet och tangenthastighet, {name}")
-            ax.set_xlabel("rel. normalrörelsemängd")
-            ax.set_ylabel("rel. tangenthastighet")
-            ax.set_zlabel("Friktionskoefficient")
+            plt.title(f"Friktionskoefficient mot normalenergi och tangenthastighet, {name}")
+            ax.set_xlabel("Rörelseenergi från hastighet i normalled, [J]")
+            ax.set_ylabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
+            ax.set_zlabel("Friktionskoefficient ($\mu$), [1]")
             plt.show()
 
-    def x_rel_normal_momentum_y_tangent_vel_z_e():
+    def x_normal_energy_y_tangent_vel_z_e():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
         sels = [
@@ -249,34 +276,33 @@ def main():
         ]
 
         for name, s in sels:
-            sign_n = (rel_normal_momentum_before[s] > 0).astype(int) * 2 - 1
             sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
-            x = rel_normal_momentum_before[s] * sign_n
+            x = energy_before_normal[s]
             y = rel_tangent_vel_before[s] * sign_t
             z = e[s]
 
             fig = plt.figure()
             ax = plt.axes(projection='3d')
             ax.scatter3D(x, y, z)
-            plt.title(f"Elasticitetskoefficient mot normalhastighet och tangenthastighet, {name}")
-            ax.set_xlabel("rel. normalrörelsemängd")
-            ax.set_ylabel("rel. tangenthastighet")
-            ax.set_zlabel("Elasticitetskoefficient")
+            plt.title(f"Elasticitetskoefficient mot normalenergi och tangenthastighet, {name}")
+            ax.set_xlabel("Rörelseenergi från hastighet i normalled, [J]")
+            ax.set_ylabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
+            ax.set_zlabel("Elasticitetskoefficient ($e$), [1]")
             plt.show()
 
 
 
 
-        
-    # x_group_y_momentum_diff()
-    # x_group_y_e()
-    # x_group_y_fric_coeff()
-    # x_rel_tangent_vel_y_fric_coeff()
-    # x_rel_normal_vel_y_fric_coeff()
-    # x_rel_tangent_vel_y_e()
-    # x_rel_normal_vel_y_e()
-    x_rel_normal_momentum_y_tangent_vel_z_fric_coeff()
-    # x_rel_normal_momentum_y_tangent_vel_z_e()
+    
+    x_group_y_momentum_diff()
+    x_group_y_e()
+    x_group_y_fric_coeff()
+    x_rel_tangent_vel_y_fric_coeff()
+    x_normal_energy_y_fric_coeff()
+    x_rel_tangent_vel_y_e()
+    x_normal_energy_y_e()
+    # x_normal_energy_y_tangent_vel_z_fric_coeff()
+    # x_normal_energy_y_tangent_vel_z_e()
 
     input("Press enter to continue...")
 
