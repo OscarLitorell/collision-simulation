@@ -19,6 +19,8 @@ def main():
     name = np.array(cols[header.index("name")])
     pos_0_x = np.array(cols[header.index("pos_0_x")]).astype(float)
     pos_0_y = np.array(cols[header.index("pos_0_y")]).astype(float)
+    pos_1_x = np.array(cols[header.index("pos_1_x")]).astype(float)
+    pos_1_y = np.array(cols[header.index("pos_1_y")]).astype(float)
     vel_0_before_x = np.array(cols[header.index("vel_0_before_x")]).astype(float)
     vel_0_before_y = np.array(cols[header.index("vel_0_before_y")]).astype(float)
     vel_1_before_x = np.array(cols[header.index("vel_1_before_x")]).astype(float)
