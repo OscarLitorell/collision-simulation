@@ -49,6 +49,30 @@ def main():
     e = np.array(cols[header.index("e")]).astype(float)
     moment_of_inertia_0 = np.array(cols[header.index("moment_of_inertia_0")]).astype(float)
     moment_of_inertia_1 = np.array(cols[header.index("moment_of_inertia_1")]).astype(float)
+
+    total_momentum_before_x = mass_0 * vel_0_before_x + mass_1 * vel_1_before_x
+    total_momentum_before_y = mass_0 * vel_0_before_y + mass_1 * vel_1_before_y
+    total_momentum_after_x = mass_0 * vel_0_after_x + mass_1 * vel_1_after_x
+    total_momentum_after_y = mass_0 * vel_0_after_y + mass_1 * vel_1_after_y
+    momentum_diff_x = total_momentum_after_x - total_momentum_before_x
+    momentum_diff_y = total_momentum_after_y - total_momentum_before_y
+    momentum_diff = np.sqrt(momentum_diff_x**2 + momentum_diff_y**2)
+
+    normal = np.array([pos_1_x - pos_0_x, pos_1_y - pos_0_y]).T
+    normal /= np.linalg.norm(normal, axis=1).reshape((normal.shape[0], 1))
+    tangent = np.array([-normal[1], normal[0]])
+
+    momentum_before_0 = mass_0 * np.array([vel_0_before_x, vel_0_before_y])
+    momentum_before_1 = mass_1 * np.array([vel_1_before_x, vel_1_before_y])
+    momentum_after_0 = mass_0 * np.array([vel_0_after_x, vel_0_after_y])
+    momentum_after_1 = mass_1 * np.array([vel_1_after_x, vel_1_after_y])
+    rel_momentum_before = momentum_before_0 - momentum_before_1
+    rel_momentum_after = momentum_after_0 - momentum_after_1
+    rel_normal_momentum_before = np.dot(rel_momentum_before, normal)
+    rel_tangent_momentum_before = np.dot(rel_momentum_before, tangent)
+    rel_normal_momentum_after = np.dot(rel_momentum_after, normal)
+    rel_tangent_momentum_after = np.dot(rel_momentum_after, tangent)
+
         
     group = [os.path.normpath(n).split(os.path.sep)[0] for n in name]
     groups = list(set(group))
