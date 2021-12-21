@@ -62,16 +62,16 @@ def main():
     normal /= np.linalg.norm(normal, axis=1).reshape((normal.shape[0], 1))
     tangent = np.array([-normal[:, 1], normal[:, 0]]).T
 
-    momentum_before_0 = mass_0 * np.array([vel_0_before_x, vel_0_before_y])
-    momentum_before_1 = mass_1 * np.array([vel_1_before_x, vel_1_before_y])
-    momentum_after_0 = mass_0 * np.array([vel_0_after_x, vel_0_after_y])
-    momentum_after_1 = mass_1 * np.array([vel_1_after_x, vel_1_after_y])
+    momentum_before_0 = mass_0.reshape((len(mass_0), 1)) * np.array([vel_0_before_x, vel_0_before_y]).T
+    momentum_before_1 = mass_1.reshape((len(mass_1), 1)) * np.array([vel_1_before_x, vel_1_before_y]).T
+    momentum_after_0 = mass_0.reshape((len(mass_0), 1)) * np.array([vel_0_after_x, vel_0_after_y]).T
+    momentum_after_1 = mass_1.reshape((len(mass_1), 1)) * np.array([vel_1_after_x, vel_1_after_y]).T
     rel_momentum_before = momentum_before_0 - momentum_before_1
     rel_momentum_after = momentum_after_0 - momentum_after_1
-    rel_normal_momentum_before = np.dot(rel_momentum_before, normal)
-    rel_tangent_momentum_before = np.dot(rel_momentum_before, tangent)
-    rel_normal_momentum_after = np.dot(rel_momentum_after, normal)
-    rel_tangent_momentum_after = np.dot(rel_momentum_after, tangent)
+    rel_normal_momentum_before = rel_momentum_before[:, 0] * normal[:, 0] + rel_momentum_before[:, 1] * normal[:, 1]
+    rel_tangent_momentum_before = rel_momentum_before[:, 0] * tangent[:, 0] + rel_momentum_before[:, 1] * tangent[:, 1]
+    rel_normal_momentum_after = rel_momentum_after[:, 0] * normal[:, 0] + rel_momentum_after[:, 1] * normal[:, 1]
+    rel_tangent_momentum_after = rel_momentum_after[:, 0] * tangent[:, 0] + rel_momentum_after[:, 1] * tangent[:, 1]
 
         
     group = [os.path.normpath(n).split(os.path.sep)[0] for n in name]
@@ -203,7 +203,7 @@ def main():
             plt.ylabel("Elasticitetskoefficient")
             plt.show()
 
-    def x_rel_normal_vel_y_tangent_vel_z_fric_coeff():
+    def x_rel_normal_momentum_y_tangent_vel_z_fric_coeff():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
         sels = [
@@ -213,9 +213,9 @@ def main():
         ]
 
         for name, s in sels:
-            sign_n = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
-            x = rel_normal_vel_before[s] * sign_n
+            sign_n = (rel_normal_momentum_before[s] > 0).astype(int) * 2 - 1
             sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
+            x = rel_normal_momentum_before[s] * sign_n
             y = rel_tangent_vel_after[s] * sign_t
             z = fric_coeff[s]           
 
@@ -228,7 +228,7 @@ def main():
             ax.set_zlabel("Friktionskoefficient")
             plt.show()
 
-    def x_rel_normal_vel_y_tangent_vel_z_e():
+    def x_rel_normal_momentum_y_tangent_vel_z_e():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
         sels = [
@@ -238,9 +238,9 @@ def main():
         ]
 
         for name, s in sels:
-            sign_n = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
+            sign_n = (rel_normal_momentum_before[s] > 0).astype(int) * 2 - 1
             sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
-            x = rel_normal_vel_before[s] * sign_n
+            x = rel_normal_momentum_before[s] * sign_n
             y = rel_tangent_vel_before[s] * sign_t
             z = e[s]
 
@@ -264,8 +264,8 @@ def main():
     # x_rel_normal_vel_y_fric_coeff()
     # x_rel_tangent_vel_y_e()
     # x_rel_normal_vel_y_e()
-    # x_rel_normal_vel_y_tangent_vel_z_fric_coeff()
-    # x_rel_normal_vel_y_tangent_vel_z_e()
+    x_rel_normal_momentum_y_tangent_vel_z_fric_coeff()
+    # x_rel_normal_momentum_y_tangent_vel_z_e()
 
     input("Press enter to continue...")
 
