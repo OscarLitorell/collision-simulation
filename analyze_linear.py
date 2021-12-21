@@ -160,17 +160,21 @@ def main():
     plt.show()
 
 
-    # for group in groups:
-    #     mask = g == group
-    #     print(group)
+    plt.plot(d_v_before, e, ".")
+    plt.show()
 
-    #     x = d_v_before[mask]
-    #     y = e[mask]
+    for group in groups:
+        mask = g == group
+        print(group)
 
-    #     plt.plot(x, y, "o")
-    #     plt.xlabel("d_v_before")
-    #     plt.ylabel("e")
-    #     plt.show()
+        x = d_v_before[mask]
+        y = e[mask]
+
+        plt.plot(x, y, "o")
+        plt.xlabel("d_v_before")
+        plt.ylabel("e")
+        plt.title(group)
+        plt.show()
 
 
     input("Press enter to continue")
