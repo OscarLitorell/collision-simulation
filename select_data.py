@@ -315,13 +315,13 @@ def main():
 
 
     
-    x_group_y_momentum_diff()
-    x_group_y_e()
-    x_group_y_fric_coeff()
-    x_rel_tangent_vel_y_fric_coeff()
-    x_normal_energy_y_fric_coeff()
-    x_rel_tangent_vel_y_e()
-    x_normal_energy_y_e()
+    # x_group_y_momentum_diff()
+    # x_group_y_e()
+    # x_group_y_fric_coeff()
+    # x_rel_tangent_vel_y_fric_coeff()
+    # x_normal_energy_y_fric_coeff()
+    # x_rel_tangent_vel_y_e()
+    # x_normal_energy_y_e()
     # x_normal_energy_y_tangent_vel_z_fric_coeff()
     # x_normal_energy_y_tangent_vel_z_e()
 
