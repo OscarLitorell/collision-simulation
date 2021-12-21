@@ -197,7 +197,7 @@ def main():
 
         for name, s in sels:
             sign_n = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
-            sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
+            sign_t = (rel_tangent_vel_after[s] > 0).astype(int) * 2 - 1
             x = rel_normal_vel_before[s] * sign_n
             y = rel_tangent_vel_after[s] * sign_t
             z = fric_coeff[s]           
