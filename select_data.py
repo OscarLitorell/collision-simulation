@@ -217,13 +217,24 @@ def main():
             sign_t = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
             x = rel_normal_momentum_before[s] * sign_n
             y = rel_tangent_vel_after[s] * sign_t
-            z = fric_coeff[s]           
+            z = fric_coeff[s]
+
+            mask = y > 0.1
+            x1 = x[mask]
+            y1 = y[mask]
+            z1 = z[mask]
+            x2 = x[~mask]
+            y2 = y[~mask]
+            z2 = z[~mask]
+
 
             fig = plt.figure()
             ax = plt.axes(projection='3d')
-            ax.scatter3D(x, y, z)
+            # ax.scatter3D(x, y, z)
+            ax.scatter3D(x1, y1, z1, c='r', marker='o')
+            ax.scatter3D(x2, y2, z2, c='b', marker='o')
             plt.title(f"Friktionskoefficient mot normalhastighet och tangenthastighet, {name}")
-            ax.set_xlabel("rel. normalhastighet")
+            ax.set_xlabel("rel. normalrörelsemängd")
             ax.set_ylabel("rel. tangenthastighet")
             ax.set_zlabel("Friktionskoefficient")
             plt.show()
@@ -248,7 +259,7 @@ def main():
             ax = plt.axes(projection='3d')
             ax.scatter3D(x, y, z)
             plt.title(f"Elasticitetskoefficient mot normalhastighet och tangenthastighet, {name}")
-            ax.set_xlabel("rel. normalhastighet")
+            ax.set_xlabel("rel. normalrörelsemängd")
             ax.set_ylabel("rel. tangenthastighet")
             ax.set_zlabel("Elasticitetskoefficient")
             plt.show()
