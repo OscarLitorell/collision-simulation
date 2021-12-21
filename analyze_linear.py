@@ -131,8 +131,29 @@ def main():
     d_v_after = np.linalg.norm(v_0_after - v_1_after, axis=1)
     e = d_v_after / d_v_before
 
-    fig, ax = plt.subplots()
-    ax.scatter(x=g, y=e)
+    momentum_0_before = mass_0.reshape((len(mass_0), 1)) * v_0_before
+    momentum_1_before = mass_1.reshape((len(mass_1), 1)) * v_1_before
+    momentum_0_after = mass_0.reshape((len(mass_0), 1)) * v_0_after
+    momentum_1_after = mass_1.reshape((len(mass_1), 1)) * v_1_after
+    
+    total_momentum_before = momentum_0_before + momentum_1_before
+    total_momentum_after = momentum_0_after + momentum_1_after
+
+    rel_momentum_before = momentum_1_before - momentum_0_before
+    rel_momentum_after = momentum_1_after - momentum_0_after
+
+    momentum_diff = total_momentum_after - total_momentum_before
+    normalized_momentum_diff = momentum_diff #/ np.linalg.norm(rel_momentum_after - rel_momentum_before, axis=1).reshape((momentum_diff.shape[0],1)) * 2
+    abs_normalized_momentum_diff = np.linalg.norm(normalized_momentum_diff, axis=1)
+
+
+    plt.grid()
+    plt.scatter(g, abs_normalized_momentum_diff)
+    plt.xlabel("Diskar")
+    plt.ylabel("Relativ förändring av total rörelsemängd")
+    plt.show()
+
+    plt.scatter(g, e)
     plt.xlabel("Diskar")
     plt.ylabel("Elasticitetskoefficient")
     plt.title("Elasticitetskoefficient")
