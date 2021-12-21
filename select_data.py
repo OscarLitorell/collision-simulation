@@ -115,20 +115,25 @@ def main():
     sel = np.array([n not in blacklist for n in name])
 
     def x_group_y_momentum_diff():
-        plt.scatter(x=group[sel], y=momentum_diff[sel] / momentum_scale[sel], marker="o", c="#00f3")
-        plt.title("Skillnad i rörelsemängd mellan före och efter kollision")
+        plt.scatter(x=group[sel], y=momentum_diff[sel] / momentum_scale[sel], c="#00f3")
+        plt.title("Normerad skillnad i rörelsemängd mellan före och efter kollision")
+        plt.xticks(rotation=45)
+        plt.xlabel("Kollisionsgrupp")
+        plt.ylabel("Normerad förändring av total rörelsemängd [1]")
         plt.show()
 
 
     def x_group_y_e():
-        plt.scatter(x=group[sel], y=e[sel], marker="o", c="#00f3")
+        plt.scatter(x=group[sel], y=e[sel], c="#00f3")
         plt.title("Elasticitetskoefficient")
+        plt.xticks(rotation=45)
         plt.show()
 
 
     def x_group_y_fric_coeff():
-        plt.scatter(x=group[sel], y=fric_coeff[sel], marker="o", c="#00f3")
+        plt.scatter(x=group[sel], y=fric_coeff[sel], c="#00f3")
         plt.title("Friktionskoefficient")
+        plt.xticks(rotation=45)
         plt.show()
 
 
@@ -207,28 +212,44 @@ def main():
             plt.title(f"Elasticitetskoefficient mot tangenthastighet, {name}")
             plt.xlabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
             plt.ylabel("Elasticitetskoefficient ($e$), [1]")
+            plt.ylim(0, 1.1)
             plt.show()
 
     
     def x_normal_energy_y_e():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
-        sels = [
+        rub_sels = [
             ("båda gummi", np.all([rub_rub, sel], axis=0)),
-            ("ena gummi", np.all([rub, sel], axis=0)),
+            ("ena gummi", np.all([rub, sel], axis=0))
+        ]
+
+        alu_sels = [
             ("aluminium", np.all([~rub, ~rub_rub, sel], axis=0))
         ]
 
-        for name, s in sels:
-            sign = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
-            x = rel_normal_vel_before[s] * sign
-            y = e[s]
+        for sels in [rub_sels, alu_sels]:
+            for name, s in sels:
+                sign = (rel_normal_vel_before[s] > 0).astype(int) * 2 - 1
+                x = rel_normal_vel_before[s] * sign
+                y = e[s]
 
-            plt.plot(x, y, '.')
+                if sels == alu_sels:
+                    plt.plot(x, y, '.g')
+                else:
+                    plt.plot(x, y, '.')
+
+            names = [name for name, s in sels]
+
+            if len(names) > 1:
+                plt.legend(names)
+
             plt.grid()
-            plt.title(f"Elasticitetskoefficient mot normalenergi, {name}")
+            plt.title(f"Elasticitetskoefficient mot normalenergi, {' och '.join(names)}")
             plt.xlabel("Rörelseenergi från hastighet i normalled, [J]")
             plt.ylabel("Elasticitetskoefficient ($e$), [1]")
+            plt.ylim(0, 1.1)
+
             plt.show()
 
     def x_normal_energy_y_tangent_vel_z_fric_coeff():
