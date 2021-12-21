@@ -60,7 +60,7 @@ def main():
 
     normal = np.array([pos_1_x - pos_0_x, pos_1_y - pos_0_y]).T
     normal /= np.linalg.norm(normal, axis=1).reshape((normal.shape[0], 1))
-    tangent = np.array([-normal[1], normal[0]])
+    tangent = np.array([-normal[:, 1], normal[:, 0]]).T
 
     momentum_before_0 = mass_0 * np.array([vel_0_before_x, vel_0_before_y])
     momentum_before_1 = mass_1 * np.array([vel_1_before_x, vel_1_before_y])
