@@ -3,6 +3,7 @@ import numpy as np
 
 import analyze_collision
 import scipy.signal as signal
+import matplotlib
 import matplotlib.pyplot as plt
 
 
@@ -151,19 +152,31 @@ def main():
     abs_normalized_momentum_diff = np.linalg.norm(normalized_momentum_diff, axis=1)
 
 
+    # font = {"size": 11}
+    # matplotlib.rc("font", **font)
+
+
+
+    fig, ax = plt.subplots()
+    fig.subplots_adjust(bottom=0.3)
     plt.scatter(g, abs_normalized_momentum_diff, c="#00f3")
     plt.title("Normerad skillnad i rörelsemängd mellan före och efter kollision")
     plt.xlabel("Kollisionsgrupp")
     plt.ylabel("Normerad förändring av total rörelsemängd [1]")
-    plt.ylim(0, 1)
+    plt.ylim(0, 0.6)
     plt.xticks(rotation=45)
+    plt.savefig("plots_1d/momentum_diff.svg")
     plt.show()
 
+    fig, ax = plt.subplots()
+    fig.subplots_adjust(bottom=0.3)
     plt.scatter(g, e, c="#00f3")
     plt.xlabel("Kollisionsgrupp")
-    plt.ylabel("Elasticitetskoefficient")
-    plt.title("Elasticitetskoefficient")
+    plt.ylabel("Elasticitetskoefficient ($e$), [1]")
+    plt.title("Elasticitetskoefficient för varje kollisionsgrupp")
+    plt.ylim(0, 1.1)
     plt.xticks(rotation=45)
+    plt.savefig("plots_1d/elasticity.svg")
     plt.show()
 
 
