@@ -2,6 +2,7 @@
 
 import numpy as np
 import os
+import matplotlib
 import matplotlib.pyplot as plt
 
 
@@ -114,26 +115,41 @@ def main():
 
     sel = np.array([n not in blacklist for n in name])
 
+    save = True
+
     def x_group_y_momentum_diff():
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=0.3)
+        plt.ylim(0, 0.6)
         plt.scatter(x=group[sel], y=momentum_diff[sel] / momentum_scale[sel], c="#00f3")
         plt.title("Normerad skillnad i rörelsemängd mellan före och efter kollision")
         plt.xticks(rotation=45)
         plt.xlabel("Kollisionsgrupp")
         plt.ylabel("Normerad förändring av total rörelsemängd [1]")
+        if save:
+            plt.savefig("plots_2d/x_group_y_momentum_diff.svg")
         plt.show()
 
 
     def x_group_y_e():
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=0.3)
         plt.scatter(x=group[sel], y=e[sel], c="#00f3")
         plt.title("Elasticitetskoefficient")
         plt.xticks(rotation=45)
+        if save:
+            plt.savefig("plots_2d/x_group_y_e.svg")
         plt.show()
 
 
     def x_group_y_fric_coeff():
+        fig, ax = plt.subplots()
+        fig.subplots_adjust(bottom=0.3)
         plt.scatter(x=group[sel], y=fric_coeff[sel], c="#00f3")
         plt.title("Impulskvot")
         plt.xticks(rotation=45)
+        if save:
+            plt.savefig("plots_2d/x_group_y_fric_coeff.svg")
         plt.show()
 
 
@@ -162,9 +178,11 @@ def main():
 
 
             plt.grid()
-            plt.title(f"Impulskvot mot relativ tangenthastighet, {name}")
+            plt.title(f"A. Impulskvot mot relativ tangenthastighet, {name}")
             plt.xlabel("Relativ tangenthastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
             plt.ylabel("Impulskvot ($\mu_i$), [1]")
+            if save:
+                plt.savefig(f"plots_2d/x_rel_tangent_vel_y_fric_coeff_{name}.svg")
             plt.show()
 
 
@@ -187,9 +205,11 @@ def main():
             plt.plot(x[static], y[static], 'r.')
             plt.plot(x[~static], y[~static], 'bx')
             plt.grid()
-            plt.title(f"Impulskvot mot normalenergi, {name}")
+            plt.title(f"B. Impulskvot mot normalenergi, {name}")
             plt.xlabel("Rörelseenergi från hastighet i normalled ($E_{\\bot}$), [J]")
             plt.ylabel("Impulskvot ($\mu_i$), [1]")
+            if save:
+                plt.savefig(f"plots_2d/x_normal_energy_y_fric_coeff_{name}.svg")
             plt.show()
     
 
@@ -225,6 +245,8 @@ def main():
             plt.xlabel("Relativ tangentiell hastighet i kontaktpunkt före stöten ($\Delta u_{\\parallel}$), [m/s]")
             plt.ylabel("Elasticitetskoefficient ($e$), [1]")
             plt.ylim(0, 1.1)
+            if save:
+                plt.savefig(f"plots_2d/x_rel_tangent_vel_y_e_{'_'.join(names)}.svg")
             plt.show()
 
     
@@ -261,7 +283,8 @@ def main():
             plt.xlabel("Rörelseenergi från hastighet i normalled ($E_{\\bot}$), [J]")
             plt.ylabel("Elasticitetskoefficient ($e$), [1]")
             plt.ylim(0, 1.1)
-
+            if save:
+                plt.savefig(f"plots_2d/x_normal_energy_y_e_{'_'.join(names)}.svg")
             plt.show()
 
     def x_normal_energy_y_tangent_vel_z_fric_coeff():
@@ -297,6 +320,8 @@ def main():
             ax.set_xlabel("Rörelseenergi från hastighet i normalled ($E_{\\bot}$), [J]")
             ax.set_ylabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
             ax.set_zlabel("Impulskvot ($\mu_i$), [1]")
+            if save:
+                plt.savefig(f"plots_2d/x_normal_energy_y_tangent_vel_z_fric_coeff_{name}.svg")
             plt.show()
 
     def x_normal_energy_y_tangent_vel_z_e():
@@ -321,21 +346,23 @@ def main():
             ax.set_xlabel("Rörelseenergi från hastighet i normalled ($E_{\\bot}$), [J]")
             ax.set_ylabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
             ax.set_zlabel("Elasticitetskoefficient ($e$), [1]")
+            if save:
+                plt.savefig(f"plots_2d/x_normal_energy_y_tangent_vel_z_e_{name}.svg")
             plt.show()
 
 
 
 
     
-    # x_group_y_momentum_diff()
-    # x_group_y_e()
-    # x_group_y_fric_coeff()
-    # x_rel_tangent_vel_y_fric_coeff()
-    # x_normal_energy_y_fric_coeff()
-    # x_rel_tangent_vel_y_e()
-    # x_normal_energy_y_e()
-    # x_normal_energy_y_tangent_vel_z_fric_coeff()
-    # x_normal_energy_y_tangent_vel_z_e()
+    x_group_y_momentum_diff()
+    x_group_y_e()
+    x_group_y_fric_coeff()
+    x_rel_tangent_vel_y_fric_coeff()
+    x_normal_energy_y_fric_coeff()
+    x_rel_tangent_vel_y_e()
+    x_normal_energy_y_e()
+    x_normal_energy_y_tangent_vel_z_fric_coeff()
+    x_normal_energy_y_tangent_vel_z_e()
 
     input("Press enter to continue...")
 
