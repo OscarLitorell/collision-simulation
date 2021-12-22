@@ -222,7 +222,7 @@ def main():
 
             plt.grid()
             plt.title(f"Elasticitetskoefficient mot tangenthastighet, {' och '.join(names)}")
-            plt.xlabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
+            plt.xlabel("Relativ tangentiell hastighet i kontaktpunkt före stöten ($\Delta u_{\\parallel}$), [m/s]")
             plt.ylabel("Elasticitetskoefficient ($e$), [1]")
             plt.ylim(0, 1.1)
             plt.show()
