@@ -132,7 +132,7 @@ def main():
 
     def x_group_y_fric_coeff():
         plt.scatter(x=group[sel], y=fric_coeff[sel], c="#00f3")
-        plt.title("Friktionskoefficient")
+        plt.title("Impulskvot")
         plt.xticks(rotation=45)
         plt.show()
 
@@ -162,9 +162,9 @@ def main():
 
 
             plt.grid()
-            plt.title(f"Friktionskoefficient mot relativ tangenthastighet, {name}")
+            plt.title(f"Impulskvot mot relativ tangenthastighet, {name}")
             plt.xlabel("Relativ tangenthastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
-            plt.ylabel("Friktionskoefficient ($\mu$), [1]")
+            plt.ylabel("Impulskvot ($\mu_i$), [1]")
             plt.show()
 
 
@@ -187,29 +187,41 @@ def main():
             plt.plot(x[static], y[static], 'r.')
             plt.plot(x[~static], y[~static], 'bx')
             plt.grid()
-            plt.title(f"Friktionskoefficient mot normalenergi, {name}")
-            plt.xlabel("Energi i normalled, [J]")
-            plt.ylabel("Friktionskoefficient ($\mu$), [1]")
+            plt.title(f"Impulskvot mot normalenergi, {name}")
+            plt.xlabel("Rörelseenergi från hastighet i normalled ($E_{\\bot}$), [J]")
+            plt.ylabel("Impulskvot ($\mu_i$), [1]")
             plt.show()
     
 
     def x_rel_tangent_vel_y_e():
         rub_rub = np.array(["aluRub-aluRub" in g for g in group])
         rub = np.all([np.array(["Rub" in g for g in group]), ~rub_rub], axis=0)
-        sels = [
+        rub_sels = [
             ("båda gummi", np.all([rub_rub, sel], axis=0)),
             ("ena gummi", np.all([rub, sel], axis=0)),
+        ]
+        alu_sels = [
             ("aluminium", np.all([~rub, ~rub_rub, sel], axis=0))
         ]
 
-        for name, s in sels:
-            sign = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
-            x = rel_tangent_vel_before[s] * sign
-            y = e[s]
+        for sels in [rub_sels, alu_sels]:
+            for name, s in sels:
+                sign = (rel_tangent_vel_before[s] > 0).astype(int) * 2 - 1
+                x = rel_tangent_vel_before[s] * sign
+                y = e[s]
 
-            plt.plot(x, y, '.')
+                if sels == alu_sels:
+                    plt.plot(x, y, '.g')
+                else:
+                    plt.plot(x, y, '.')
+
+            names = [name for name, _ in sels]
+                    
+            if len(names) > 1:
+                plt.legend(names)
+
             plt.grid()
-            plt.title(f"Elasticitetskoefficient mot tangenthastighet, {name}")
+            plt.title(f"Elasticitetskoefficient mot tangenthastighet, {' och '.join(names)}")
             plt.xlabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
             plt.ylabel("Elasticitetskoefficient ($e$), [1]")
             plt.ylim(0, 1.1)
@@ -239,14 +251,14 @@ def main():
                 else:
                     plt.plot(x, y, '.')
 
-            names = [name for name, s in sels]
+            names = [name for name, _ in sels]
 
             if len(names) > 1:
                 plt.legend(names)
 
             plt.grid()
             plt.title(f"Elasticitetskoefficient mot normalenergi, {' och '.join(names)}")
-            plt.xlabel("Rörelseenergi från hastighet i normalled, [J]")
+            plt.xlabel("Rörelseenergi från hastighet i normalled ($E_{\\bot}$), [J]")
             plt.ylabel("Elasticitetskoefficient ($e$), [1]")
             plt.ylim(0, 1.1)
 
@@ -281,10 +293,10 @@ def main():
             if len(x1) > 0:
                 ax.scatter3D(x1, y1, z1, c='r', marker='o')
             ax.scatter3D(x2, y2, z2, c='b', marker='o')
-            plt.title(f"Friktionskoefficient mot normalenergi och tangenthastighet, {name}")
-            ax.set_xlabel("Rörelseenergi från hastighet i normalled, [J]")
+            plt.title(f"Impulskvot mot normalenergi och tangenthastighet, {name}")
+            ax.set_xlabel("Rörelseenergi från hastighet i normalled ($E_{\\bot}$), [J]")
             ax.set_ylabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
-            ax.set_zlabel("Friktionskoefficient ($\mu$), [1]")
+            ax.set_zlabel("Impulskvot ($\mu_i$), [1]")
             plt.show()
 
     def x_normal_energy_y_tangent_vel_z_e():
@@ -306,7 +318,7 @@ def main():
             ax = plt.axes(projection='3d')
             ax.scatter3D(x, y, z)
             plt.title(f"Elasticitetskoefficient mot normalenergi och tangenthastighet, {name}")
-            ax.set_xlabel("Rörelseenergi från hastighet i normalled, [J]")
+            ax.set_xlabel("Rörelseenergi från hastighet i normalled ($E_{\\bot}$), [J]")
             ax.set_ylabel("Relativ tangentiell hastighet i kontaktpunkt ($\Delta u_{\\parallel}$), [m/s]")
             ax.set_zlabel("Elasticitetskoefficient ($e$), [1]")
             plt.show()
