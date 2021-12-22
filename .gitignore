@@ -8,6 +8,8 @@ analyzed_collisions/*
 analyzed_collisions.tsv
 simulation_configs/*
 raw_data/*
+plots_1d/*
+plots_2d/*
 *.zip
 .vscode
 __pycache__
